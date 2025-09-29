@@ -1,4 +1,4 @@
-package com.github.xepozz.spiralplugin.startup
+package com.github.xepozz.spiral.startup
 
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project

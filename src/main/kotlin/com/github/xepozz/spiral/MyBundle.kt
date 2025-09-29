@@ -1,4 +1,4 @@
-package com.github.xepozz.spiralplugin
+package com.github.xepozz.spiral
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls

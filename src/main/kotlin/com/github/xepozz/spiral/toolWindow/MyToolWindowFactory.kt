@@ -1,4 +1,4 @@
-package com.github.xepozz.spiralplugin.toolWindow
+package com.github.xepozz.spiral.toolWindow
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -8,8 +8,8 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.github.xepozz.spiralplugin.MyBundle
-import com.github.xepozz.spiralplugin.services.MyProjectService
+import com.github.xepozz.spiral.MyBundle
+import com.github.xepozz.spiral.services.MyProjectService
 import javax.swing.JButton
 
 

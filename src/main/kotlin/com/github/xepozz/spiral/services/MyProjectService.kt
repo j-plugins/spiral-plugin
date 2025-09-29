@@ -1,9 +1,9 @@
-package com.github.xepozz.spiralplugin.services
+package com.github.xepozz.spiral.services
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
-import com.github.xepozz.spiralplugin.MyBundle
+import com.github.xepozz.spiral.MyBundle
 
 @Service(Service.Level.PROJECT)
 class MyProjectService(project: Project) {
