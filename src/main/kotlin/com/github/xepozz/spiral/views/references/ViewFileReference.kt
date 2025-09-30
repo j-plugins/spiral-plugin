@@ -1,4 +1,4 @@
-package com.github.xepozz.spiral.references
+package com.github.xepozz.spiral.views.references
 
 import com.github.xepozz.spiral.SpiralViewUtil
 import com.intellij.openapi.project.guessProjectDir
@@ -9,21 +9,21 @@ import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.impl.PsiManagerEx
 import kotlin.io.path.Path
 
-class DirectoryReference(
-    val directory: String,
+class ViewFileReference(
+    val name: String,
     val range: TextRange,
     element: PsiElement,
 ) : PsiReferenceBase<PsiElement>(element) {
     override fun resolve(): PsiElement? {
         val project = element.project
         val projectDir = project.guessProjectDir() ?: return null
-        val offset = SpiralViewUtil.PREDEFINED_DIRS[directory]?.trim('/') ?: return null
+        val offset = SpiralViewUtil.PREDEFINED_DIRS["views"]?.trim('/') ?: return null
 
-        val path = Path("${projectDir.path}/$offset")
+        val path = Path("${projectDir.path}/$offset/$name.${SpiralViewUtil.VIEW_SUFFIX}")
 
         val vf = VirtualFileManager.getInstance().findFileByNioPath(path) ?: return null
 
-        return PsiManagerEx.getInstanceEx(project).findDirectory(vf)
+        return PsiManagerEx.getInstanceEx(project).findFile(vf)
     }
 
     override fun isSoft() = true
