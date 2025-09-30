@@ -11,10 +11,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileContent
 import com.intellij.util.indexing.ID
 import com.intellij.util.io.EnumeratorStringDescriptor
-import com.jetbrains.php.PhpIndex
 import com.jetbrains.php.lang.PhpFileType
-import com.jetbrains.php.lang.parser.parsing.classes.ClassConstant
-import com.jetbrains.php.lang.psi.PhpPsiUtil
 import com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
 import com.jetbrains.php.lang.psi.elements.ClassConstantReference
 import com.jetbrains.php.lang.psi.elements.ClassReference
@@ -28,6 +25,19 @@ private typealias PrototypedIndexType = String
 class PrototypedIndex : AbstractIndex<PrototypedIndexType>() {
     companion object {
         val key = ID.create<String, PrototypedIndexType>("Spiral.Prototyped")
+
+        fun getAll(project: Project): Map<String, String> {
+            val scope = GlobalSearchScope.allScope(project)
+
+            val prototypes = getPrototypes(project)
+
+            val fileBasedIndex = FileBasedIndex.getInstance()
+
+            return prototypes
+                .map { it to (fileBasedIndex.getValues(key, it, scope).firstOrNull() ?: "") }
+                .associate { it }
+//            fileBasedIndex.getValues(key, prototypes, GlobalSearchScope.allScope(project))
+        }
 
         fun getPrototypes(project: Project): Collection<String> {
             val fileBasedIndex = FileBasedIndex.getInstance()

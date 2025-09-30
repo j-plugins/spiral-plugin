@@ -2,6 +2,7 @@ package com.github.xepozz.spiral.prototyped
 
 import com.github.xepozz.spiral.SpiralFrameworkClasses
 import com.github.xepozz.spiral.config.index.PrototypedIndex
+import com.github.xepozz.spiral.php.hasTrait
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -28,9 +29,7 @@ class PrototypedTypeProvider : PhpTypeProvider4 {
         if (variable.name != "this") return null
 
         val phpClass = PsiTreeUtil.getParentOfType(element, PhpClass::class.java) ?: return null
-        val traits = phpClass.traits
-        if (traits.isEmpty()) return null
-        if (traits.none { it.fqn == SpiralFrameworkClasses.PROTOTYPE_TRAIT }) return null
+        if (!phpClass.hasTrait(SpiralFrameworkClasses.PROTOTYPE_TRAIT)) return null
 
         val fieldName = element.name ?: return null
 

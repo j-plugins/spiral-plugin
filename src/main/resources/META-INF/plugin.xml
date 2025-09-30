@@ -15,10 +15,16 @@
         <psi.referenceContributor
                 language="PHP"
                 implementation="com.github.xepozz.spiral.references.FunctionsReferenceContributor"/>
+        <psi.referenceContributor
+                language="PHP"
+                implementation="com.github.xepozz.spiral.prototyped.PrototypedAttributeReferenceContributor"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.config.index.ConfigSectionIndex"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.config.index.PrototypedIndex"/>
+        <completion.contributor
+                language="PHP"
+                implementationClass="com.github.xepozz.spiral.prototyped.PrototypedCompletion"/>
     </extensions>
     <extensions defaultExtensionNs="com.jetbrains.php">
         <typeProvider4
