@@ -12,5 +12,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <multiHostInjector
                 implementation="com.github.xepozz.spiral.views.injection.PHPLanguageInjector"/>
+        <fileBasedIndex
+                implementation="com.github.xepozz.spiral.config.index.ConfigSectionIndex"/>
     </extensions>
 </idea-plugin>
