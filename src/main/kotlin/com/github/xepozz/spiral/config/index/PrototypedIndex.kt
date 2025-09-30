@@ -13,8 +13,15 @@ import com.intellij.util.indexing.ID
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.jetbrains.php.PhpIndex
 import com.jetbrains.php.lang.PhpFileType
+import com.jetbrains.php.lang.parser.parsing.classes.ClassConstant
+import com.jetbrains.php.lang.psi.PhpPsiUtil
+import com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
+import com.jetbrains.php.lang.psi.elements.ClassConstantReference
+import com.jetbrains.php.lang.psi.elements.ClassReference
 import com.jetbrains.php.lang.psi.elements.PhpAttribute
 import com.jetbrains.php.lang.psi.elements.PhpClass
+import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
+import com.jetbrains.php.lang.psi.elements.impl.ClassConstImpl
 
 private typealias PrototypedIndexType = String
 
@@ -37,7 +44,7 @@ class PrototypedIndex : AbstractIndex<PrototypedIndexType>() {
         }
     }
 
-    override fun getVersion() = 1
+    override fun getVersion() = 2
 
     override fun getName() = key
 
@@ -46,8 +53,35 @@ class PrototypedIndex : AbstractIndex<PrototypedIndexType>() {
     override fun getInputFilter() = FileBasedIndex.InputFilter { it.fileType == PhpFileType.INSTANCE }
 
     override fun getIndexer() = DataIndexer<String, PrototypedIndexType, FileContent> { inputData ->
-        inputData
-            .psiFile
+        val psiFile = inputData.psiFile
+
+        val classes = PsiTreeUtil.findChildrenOfType(psiFile, PhpClass::class.java)
+        val prototypeBootloaderClass = classes.find { it.fqn == SpiralFrameworkClasses.PROTOTYPE_BOOTLOADER }
+        if (prototypeBootloaderClass != null) {
+            val predefinedShortcuts = PsiTreeUtil.findChildrenOfType(prototypeBootloaderClass, ClassConstImpl::class.java)
+                .firstOrNull { it.name == "DEFAULT_SHORTCUTS" }
+            if (predefinedShortcuts != null) {
+                val content = predefinedShortcuts.defaultValue as? ArrayCreationExpression
+                if (content != null) {
+                    val hashElements = content.hashElements
+
+                    val result = mutableMapOf<String, PrototypedIndexType>()
+
+                    for (elem in hashElements) {
+                        val key = elem.key as? StringLiteralExpression ?: continue
+                        val value = elem.value as? ClassConstantReference ?: continue
+                        val classReference = value.classReference as? ClassReference ?: continue
+
+                        result[key.contents] = classReference.fqn.toString()
+                    }
+
+//                    println("predefinedShortcuts: $result")
+                    return@DataIndexer result
+                }
+            }
+        }
+
+        psiFile
             .let { PsiTreeUtil.findChildrenOfType(it, PhpAttribute::class.java) }
             .filter { it.fqn == SpiralFrameworkClasses.PROTOTYPED }
             .mapNotNull { attribute ->

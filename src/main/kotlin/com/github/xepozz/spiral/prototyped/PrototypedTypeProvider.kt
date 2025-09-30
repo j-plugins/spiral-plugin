@@ -20,7 +20,8 @@ class PrototypedTypeProvider : PhpTypeProvider4 {
     override fun getKey() = '\uA644'
 
     override fun getType(element: PsiElement): PhpType? {
-        if (DumbService.isDumb(element.project)) return null
+        val project = element.project
+        if (DumbService.isDumb(project)) return null
 
         val element = element as? FieldReference ?: return null
         val variable = element.classReference as? Variable ?: return null
@@ -33,12 +34,13 @@ class PrototypedTypeProvider : PhpTypeProvider4 {
 
         val fieldName = element.name ?: return null
 
-        val prototypes = PrototypedIndex.getPrototypes(element.project)
+        val prototypes = PrototypedIndex.getPrototypes(project)
 
         if (fieldName !in prototypes) return null
 
 //        println("prototypes: ${prototypes}, fieldName: $fieldName")
-        return PhpType().add("#${key}$fieldName")
+        return getBySignature(fieldName, emptySet(), 0, project)?.firstOrNull()?.type
+//        return PhpType().add("#${key}$fieldName")
     }
 
     override fun complete(
@@ -61,7 +63,9 @@ class PrototypedTypeProvider : PhpTypeProvider4 {
 
         val prototypeFqn = PrototypedIndex.getPrototypeClass(expression, project)
         val phpIndex = PhpIndex.getInstance(project)
-        val classes = phpIndex.getClassesByFQN(prototypeFqn)
+        val classes = phpIndex.getAnyByFQN(prototypeFqn)
+
+//        println("find classes $classes by prototypeFqn $prototypeFqn")
         if (classes.isEmpty()) return null
 
         return classes

@@ -6,4 +6,5 @@ object SpiralFrameworkClasses {
     const val ENVIRONMENT_INTERFACE = "\\Spiral\\Boot\\EnvironmentInterface"
     const val PROTOTYPED = "\\Spiral\\Prototype\\Annotation\\Prototyped"
     const val PROTOTYPE_TRAIT = "\\Spiral\\Prototype\\Traits\\PrototypeTrait"
+    const val PROTOTYPE_BOOTLOADER = "\\Spiral\\Prototype\\Bootloader\\PrototypeBootloader"
 }
