@@ -10,7 +10,7 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.xepozz.spiral.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.xepozz.spiral.startup.MyProjectActivity" />
+        <multiHostInjector
+                implementation="com.github.xepozz.spiral.views.injection.PHPLanguageInjector"/>
     </extensions>
 </idea-plugin>
