@@ -18,6 +18,9 @@
         <psi.referenceContributor
                 language="PHP"
                 implementation="com.github.xepozz.spiral.prototyped.PrototypedAttributeReferenceContributor"/>
+        <psi.referenceContributor
+                language="PHP"
+                implementation="com.github.xepozz.spiral.views.references.ViewReferenceContributor"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.config.index.ConfigSectionIndex"/>
         <fileBasedIndex
