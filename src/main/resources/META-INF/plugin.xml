@@ -17,5 +17,11 @@
                 implementation="com.github.xepozz.spiral.references.FunctionsReferenceContributor"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.config.index.ConfigSectionIndex"/>
+        <fileBasedIndex
+                implementation="com.github.xepozz.spiral.config.index.PrototypedIndex"/>
+    </extensions>
+    <extensions defaultExtensionNs="com.jetbrains.php">
+        <typeProvider4
+                implementation="com.github.xepozz.spiral.prototyped.PrototypedTypeProvider"/>
     </extensions>
 </idea-plugin>
