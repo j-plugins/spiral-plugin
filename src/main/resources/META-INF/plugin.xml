@@ -12,6 +12,9 @@
     <extensions defaultExtensionNs="com.intellij">
         <multiHostInjector
                 implementation="com.github.xepozz.spiral.views.injection.PHPLanguageInjector"/>
+        <psi.referenceContributor
+                language="PHP"
+                implementation="com.github.xepozz.spiral.references.FunctionsReferenceContributor"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.config.index.ConfigSectionIndex"/>
     </extensions>
