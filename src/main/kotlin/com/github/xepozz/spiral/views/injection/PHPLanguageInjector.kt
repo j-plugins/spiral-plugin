@@ -1,6 +1,5 @@
 package com.github.xepozz.spiral.views.injection
 
-import com.github.tempest.framework.views.injection.HtmlTextInjectionHostWrapper
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.tree.util.children

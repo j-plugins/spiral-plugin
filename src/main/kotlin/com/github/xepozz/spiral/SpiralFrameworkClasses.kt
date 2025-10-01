@@ -8,4 +8,6 @@ object SpiralFrameworkClasses {
     const val PROTOTYPE_TRAIT = "\\Spiral\\Prototype\\Traits\\PrototypeTrait"
     const val PROTOTYPE_BOOTLOADER = "\\Spiral\\Prototype\\Bootloader\\PrototypeBootloader"
     const val VIEWS_BOOTLOADER = "\\Spiral\\Views\\Bootloader\\ViewsBootloader"
+
+    const val AS_COMMAND = "\\Spiral\\Console\\Attribute\\AsCommand"
 }

@@ -1,4 +1,4 @@
-package com.github.tempest.framework.views.injection
+package com.github.xepozz.spiral.views.injection
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTFactory
