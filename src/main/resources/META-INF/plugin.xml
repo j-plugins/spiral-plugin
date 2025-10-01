@@ -14,6 +14,9 @@
                 implementation="com.github.xepozz.spiral.views.injection.PHPLanguageInjector"/>
         <psi.referenceContributor
                 language="PHP"
+                implementation="com.github.xepozz.spiral.container.references.ContainerReferenceContributor"/>
+        <psi.referenceContributor
+                language="PHP"
                 implementation="com.github.xepozz.spiral.references.FunctionsReferenceContributor"/>
         <psi.referenceContributor
                 language="PHP"
