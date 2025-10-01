@@ -25,15 +25,12 @@ class ViewReferenceContributor : PsiReferenceContributor() {
                     element: PsiElement,
                     context: ProcessingContext
                 ): Array<out PsiReference?> {
-                    println("reference: $element: ${element.text}")
+//                    println("reference: $element: ${element.text}")
 
                     return when (element) {
                         is StringLiteralExpression -> arrayOf(
-                            ViewFileReference(
-                                element.contents,
-                                element.textRangeInParent,
-                                element,
-                            )
+                            ViewNamespaceReference(element.contents, element),
+                            ViewFileReference(element.contents, element),
                         )
 
                         else -> PsiReference.EMPTY_ARRAY

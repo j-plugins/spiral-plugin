@@ -38,7 +38,7 @@ class PrototypedAttributeReferenceContributor : PsiReferenceContributor() {
                     element: PsiElement,
                     context: ProcessingContext
                 ): Array<out PsiReference> {
-                    println("reference: $element: ${element.text}")
+//                    println("reference: $element: ${element.text}")
 
                     val phpClass = PsiTreeUtil
                         .getParentOfType(element, PhpClass::class.java)
