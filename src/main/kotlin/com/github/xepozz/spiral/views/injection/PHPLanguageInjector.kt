@@ -48,7 +48,7 @@ class PHPLanguageInjector : MultiHostInjector {
             }
 
             is XmlText -> {
-                println("element: ${element.text}, ${element.javaClass.name} ${element is PsiLanguageInjectionHost}")
+//                println("element: ${element.text}, ${element.javaClass.name} ${element is PsiLanguageInjectionHost}")
                 val injectableHost = element as? PsiLanguageInjectionHost ?: return
                 injectIntoText(injectableHost, registrar)
             }
@@ -62,7 +62,7 @@ class PHPLanguageInjector : MultiHostInjector {
         val children = element.node.children().toList()
             .filter { it is XmlToken }
             .apply { if (isEmpty()) return }
-        println("children: $children")
+//        println("children: $children")
 
         val textRange: TextRange
 

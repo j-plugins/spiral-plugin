@@ -36,13 +36,13 @@
                 implementation="com.github.xepozz.spiral.console.run.SpiralConsoleCommandRunConfigurationType"/>
         <runLineMarkerContributor
                 language="PHP"
-                implementationClass="com.github.xepozz.spiral.console.run.ConsoleCommandLineMarkerProvider" />
+                implementationClass="com.github.xepozz.spiral.console.run.ConsoleCommandLineMarkerProvider"/>
         <runConfigurationProducer
-                implementation="com.github.xepozz.spiral.console.run.SpiralRunConfigurationProducer" />
+                implementation="com.github.xepozz.spiral.console.run.SpiralRunConfigurationProducer"/>
         <runAnything.executionProvider
-                implementation="com.github.xepozz.spiral.console.run.SpiralRunAnythingProvider" />
+                implementation="com.github.xepozz.spiral.console.run.SpiralRunAnythingProvider"/>
         <fileBasedIndex
-                implementation="com.github.xepozz.spiral.console.index.ConsoleCommandsIndex" />
+                implementation="com.github.xepozz.spiral.console.index.ConsoleCommandsIndex"/>
     </extensions>
     <extensions defaultExtensionNs="com.jetbrains.php">
         <typeProvider4
