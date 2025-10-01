@@ -30,6 +30,8 @@
         <completion.contributor
                 language="PHP"
                 implementationClass="com.github.xepozz.spiral.prototyped.PrototypedCompletion"/>
+        <spellchecker.bundledDictionaryProvider
+                implementation="com.github.xepozz.spiral.SpellcheckingDictionaryProvider"/>
         <configurationType
                 implementation="com.github.xepozz.spiral.console.run.SpiralConsoleCommandRunConfigurationType"/>
         <runLineMarkerContributor
