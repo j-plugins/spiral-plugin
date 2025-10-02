@@ -59,6 +59,8 @@
                 implementation="com.github.xepozz.spiral.router.index.RouterUrlsIndex"/>
         <implicitUsageProvider
                 implementation="com.github.xepozz.spiral.cqrs.CqrsHandlersImplicitUsageProvider"/>
+        <implicitUsageProvider
+                implementation="com.github.xepozz.spiral.router.RoutesImplicitUsageProvider"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.cqrs.index.CqrsCommandIndex"/>
         <fileBasedIndex
