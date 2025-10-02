@@ -1,11 +1,11 @@
 package com.github.xepozz.spiral.router.references
 
 import com.github.xepozz.spiral.SpiralIcons
+import com.github.xepozz.spiral.php.contentRange
 import com.github.xepozz.spiral.router.index.RouterIndexUtil
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.impl.source.tree.injected.changesHandler.contentRange
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
 
 class RouterUriReference(

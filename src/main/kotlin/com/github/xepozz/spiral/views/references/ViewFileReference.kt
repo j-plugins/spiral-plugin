@@ -1,6 +1,7 @@
 package com.github.xepozz.spiral.views.references
 
 import com.github.xepozz.spiral.SpiralViewUtil
+import com.github.xepozz.spiral.php.contentRange
 import com.github.xepozz.spiral.views.index.ViewsNamespaceIndexUtil
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.project.guessProjectDir
@@ -9,7 +10,6 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.impl.PsiManagerEx
-import com.intellij.psi.impl.source.tree.injected.changesHandler.contentRange
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
 import kotlin.io.path.Path
 

@@ -33,7 +33,7 @@ class FunctionsReferenceContributor : PsiReferenceContributor() {
 //                    println("directory: ${element.text}, function: ${function.name}")
 
                     return when (function.name) {
-                        "directory" -> arrayOf(DirectoryReference(element.contents, element.textRangeInParent, element))
+                        "directory" -> arrayOf(DirectoryReference(element.contents, element))
                         else -> PsiReference.EMPTY_ARRAY
                     }
 //                        .apply { println("references: $this") }
