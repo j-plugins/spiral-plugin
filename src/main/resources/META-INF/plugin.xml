@@ -61,6 +61,8 @@
                 implementation="com.github.xepozz.spiral.cqrs.CqrsHandlersImplicitUsageProvider"/>
         <implicitUsageProvider
                 implementation="com.github.xepozz.spiral.router.RoutesImplicitUsageProvider"/>
+        <implicitUsageProvider
+                implementation="com.github.xepozz.spiral.forms.FilterAttributesImplicitUsageProvider"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.cqrs.index.CqrsCommandIndex"/>
         <fileBasedIndex

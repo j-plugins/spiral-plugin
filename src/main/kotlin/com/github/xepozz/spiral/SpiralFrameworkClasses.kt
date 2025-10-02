@@ -12,6 +12,7 @@ object SpiralFrameworkClasses {
     const val AS_COMMAND = "\\Spiral\\Console\\Attribute\\AsCommand"
 
     const val ROUTE = "\\Spiral\\Router\\Annotation\\Route"
+    const val ATTRIBUTES_FILTER = "\\Spiral\\Validation\\Symfony\\AttributesFilter"
 
     const val CQRS_COMMAND_HANDLER = "\\Spiral\\Cqrs\\Attribute\\CommandHandler"
     const val CQRS_COMMAND = "\\Spiral\\Cqrs\\CommandInterface"
