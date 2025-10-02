@@ -2,8 +2,6 @@ package com.github.xepozz.spiral.cqrs.index
 
 import com.github.xepozz.spiral.SpiralFrameworkClasses
 import com.github.xepozz.spiral.index.AbstractIndex
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.indexing.DataIndexer
 import com.intellij.util.indexing.FileBasedIndex
@@ -17,36 +15,9 @@ import com.jetbrains.php.lang.psi.elements.PhpAttribute
 
 private typealias CommandHandlerType = String
 
-class CommandHandlerIndex : AbstractIndex<CommandHandlerType>() {
+class CqrsCommandHandlerIndex : AbstractIndex<CommandHandlerType>() {
     companion object {
         val key = ID.create<String, CommandHandlerType>("Spiral.Cqrs.CommandHandler")
-
-        fun getAll(project: Project): Map<String, String> {
-            val scope = GlobalSearchScope.allScope(project)
-
-            val prototypes = getPrototypes(project)
-
-            val fileBasedIndex = FileBasedIndex.getInstance()
-
-            return prototypes
-                .map { it to (fileBasedIndex.getValues(key, it, scope).firstOrNull() ?: "") }
-                .associate { it }
-//            fileBasedIndex.getValues(key, prototypes, GlobalSearchScope.allScope(project))
-        }
-
-        fun getPrototypes(project: Project): Collection<String> {
-            val fileBasedIndex = FileBasedIndex.getInstance()
-
-            return fileBasedIndex.getAllKeys(key, project)
-        }
-
-        fun getPrototypeClass(prototype: String, project: Project): CommandHandlerType? {
-            val fileBasedIndex = FileBasedIndex.getInstance()
-
-            return fileBasedIndex
-                .getValues(key, prototype, GlobalSearchScope.allScope(project))
-                .firstOrNull()
-        }
     }
 
     override fun getVersion() = 2
@@ -61,7 +32,7 @@ class CommandHandlerIndex : AbstractIndex<CommandHandlerType>() {
         inputData
             .psiFile
             .let { PsiTreeUtil.findChildrenOfType(it, PhpAttribute::class.java) }
-            .find { it.fqn == SpiralFrameworkClasses.COMMAND_HANDLER }
+            .find { it.fqn == SpiralFrameworkClasses.CQRS_COMMAND_HANDLER }
             .let { it?.owner as? Method }
             ?.let {
                 val command = it.getParameter(0)

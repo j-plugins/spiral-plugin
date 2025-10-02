@@ -7,11 +7,11 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.php.lang.psi.elements.PhpAttribute
 import com.jetbrains.php.lang.psi.elements.PhpClass
 
-class CommandHandlerImplicitUsageProvider : ImplicitUsageProvider {
+class CqrsCommandHandlerImplicitUsageProvider : ImplicitUsageProvider {
     override fun isImplicitUsage(element: PsiElement) = when(element) {
         is PhpClass -> PsiTreeUtil
             .findChildrenOfType(element, PhpAttribute::class.java)
-            .any { it.fqn == SpiralFrameworkClasses.COMMAND_HANDLER }
+            .any { it.fqn == SpiralFrameworkClasses.CQRS_COMMAND_HANDLER }
 
         else -> false
     }
