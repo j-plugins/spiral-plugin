@@ -15,43 +15,16 @@ import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpAttribute
 import com.jetbrains.php.lang.psi.elements.PhpNamedElement
 
-private typealias RouterUrlsIndexType = String
-
-/**
- * Stores uri -> controller/action association
- */
-class RouterUrlsIndex : AbstractIndex<RouterUrlsIndexType>() {
+class RouterUrlsIndex : AbstractRouterIndex() {
     companion object {
-        val key = ID.create<String, RouterUrlsIndexType>("Spiral.Router.Urls")
+        val key = ID.create<String, RouterIndexType>("Spiral.Router.Urls")
     }
-
-    override fun getVersion() = 1
 
     override fun getName() = key
 
-    override fun getValueExternalizer() = EnumeratorStringDescriptor.INSTANCE
-
-    override fun getInputFilter() = FileBasedIndex.InputFilter {
-        it.fileType == PhpFileType.INSTANCE && !it.name.endsWith(SpiralViewUtil.VIEW_SUFFIX)
-    }
-
-    override fun getIndexer() = DataIndexer<String, RouterUrlsIndexType, FileContent> { inputData ->
-        inputData
-            .psiFile
-            .let { PsiTreeUtil.findChildrenOfType(it, PhpAttribute::class.java) }
-            .filter { it.fqn == SpiralFrameworkClasses.ROUTE }
-            .filter { it.arguments.isNotEmpty() }
-            .mapNotNull { attribute ->
-                attribute.owner to attribute.arguments
-                    .firstOrNull { it.name == "route" }
-                    .let { it ?: attribute.arguments.getOrNull(0) }
-                    ?.argument
-                    ?.value
-                    ?.let { StringUtil.unquoteString(it) }
-            }
-            .filter { it.first is Method }
-            .filter { !it.second.isNullOrEmpty() }
-            .associate { it.second to (it.first as PhpNamedElement).fqn }
+    override fun getIndexer() = DataIndexer<String, RouterIndexType, FileContent> { inputData ->
+        parseRoutes(inputData)
+            .associateBy { it.uri }
 //            .apply { println("file: ${inputData.file}, result: $this") }
     }
 }
