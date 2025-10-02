@@ -7,6 +7,7 @@ import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.jetbrains.php.lang.psi.elements.FunctionReference
 import com.jetbrains.php.lang.psi.elements.MethodReference
 import com.jetbrains.php.lang.psi.elements.Variable
 import com.jetbrains.php.lang.psi.resolve.types.PhpTypeSignatureKey
@@ -20,14 +21,18 @@ class EnvFoldingBuilder : FoldingBuilderEx() {
         root: PsiElement,
         document: Document,
         quick: Boolean
-    ): Array<out FoldingDescriptor?> = PsiTreeUtil.findChildrenOfType(root, MethodReference::class.java)
+    ): Array<out FoldingDescriptor?> = PsiTreeUtil.findChildrenOfType(root, FunctionReference::class.java)
         .mapNotNull {
-            if (it.name != "get") return@mapNotNull null
+            if (it is MethodReference) {
+                if (it.name != "get") return@mapNotNull null
 
-            val variable = it.classReference as? Variable ?: return@mapNotNull null
-            if (variable.signature != environmentSignature) return@mapNotNull null
-            if (it.parameters.size < 1) return@mapNotNull null
-
+                val variable = it.classReference as? Variable ?: return@mapNotNull null
+                if (variable.signature != environmentSignature) return@mapNotNull null
+                if (it.parameters.size < 1) return@mapNotNull null
+            } else {
+                if (it.fqn != "\\env") return@mapNotNull null
+                if (it.parameters.size < 1) return@mapNotNull null
+            }
             val foldingDescriptor = FoldingDescriptor(it, it.textRange)
             foldingDescriptor.placeholderText = "env: ${it.parameters[0].text}"
             foldingDescriptor
