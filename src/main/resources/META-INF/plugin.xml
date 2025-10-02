@@ -12,6 +12,9 @@
     <extensions defaultExtensionNs="com.intellij">
         <multiHostInjector
                 implementation="com.github.xepozz.spiral.views.injection.PHPLanguageInjector"/>
+        <lang.foldingBuilder
+                language="PHP"
+                implementationClass="com.github.xepozz.spiral.config.env.EnvFoldingBuilder"/>
         <psi.referenceContributor
                 language="PHP"
                 implementation="com.github.xepozz.spiral.container.references.ContainerReferenceContributor"/>
