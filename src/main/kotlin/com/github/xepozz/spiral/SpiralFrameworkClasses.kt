@@ -10,4 +10,6 @@ object SpiralFrameworkClasses {
     const val VIEWS_BOOTLOADER = "\\Spiral\\Views\\Bootloader\\ViewsBootloader"
 
     const val AS_COMMAND = "\\Spiral\\Console\\Attribute\\AsCommand"
+
+    const val ROUTE = "\\Spiral\\Router\\Annotation\\Route"
 }

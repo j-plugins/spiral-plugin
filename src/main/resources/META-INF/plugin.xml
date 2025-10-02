@@ -49,6 +49,10 @@
                 implementation="com.github.xepozz.spiral.console.run.SpiralRunAnythingProvider"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.console.index.ConsoleCommandsIndex"/>
+        <fileBasedIndex
+                implementation="com.github.xepozz.spiral.router.index.RouterNamesIndex"/>
+        <fileBasedIndex
+                implementation="com.github.xepozz.spiral.router.index.RouterUrlsIndex"/>
     </extensions>
     <extensions defaultExtensionNs="com.jetbrains.php">
         <typeProvider4
