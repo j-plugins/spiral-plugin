@@ -12,4 +12,6 @@ object SpiralFrameworkClasses {
     const val AS_COMMAND = "\\Spiral\\Console\\Attribute\\AsCommand"
 
     const val ROUTE = "\\Spiral\\Router\\Annotation\\Route"
+
+    const val COMMAND_HANDLER = "\\Spiral\\Cqrs\\Attribute\\CommandHandler"
 }

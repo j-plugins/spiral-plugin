@@ -56,6 +56,8 @@
                 implementation="com.github.xepozz.spiral.router.index.RouterNamesIndex"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.router.index.RouterUrlsIndex"/>
+        <implicitUsageProvider
+                implementation="com.github.xepozz.spiral.cqrs.CommandHandlerImplicitUsageProvider"/>
     </extensions>
     <extensions defaultExtensionNs="com.jetbrains.php">
         <typeProvider4

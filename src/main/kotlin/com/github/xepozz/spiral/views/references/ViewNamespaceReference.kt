@@ -62,7 +62,6 @@ class ViewNamespaceReference(
             -1 -> element.contentRange.shiftLeft(element.textOffset)
             else -> TextRange(1, delimiterIndex)
         }
-            .apply { println("range: $this of element: ${element}, delimiterIndex: $delimiterIndex") }
     }
 }
 
