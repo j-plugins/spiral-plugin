@@ -11,17 +11,25 @@ import com.intellij.psi.PsiElement
 import com.jetbrains.php.PhpIndex
 import com.jetbrains.php.lang.psi.elements.PhpClass
 
-class CqrsCommandHandlerLineMarkerProvider : RelatedItemLineMarkerProvider() {
+class CqrsHandlersLineMarkerProvider : RelatedItemLineMarkerProvider() {
     override fun getLineMarkerInfo(element: PsiElement): RelatedItemLineMarkerInfo<*>? {
         val element = element as? PhpClass ?: return null
-        if (!element.hasInterface(SpiralFrameworkClasses.CQRS_COMMAND)) return null
+
+        val isCommand = element.hasInterface(SpiralFrameworkClasses.CQRS_COMMAND)
+        val isQuery = element.hasInterface(SpiralFrameworkClasses.CQRS_QUERY)
+        if (!isCommand && !isQuery) return null
+
         val nameIdentifier = element.nameIdentifier ?: return null
 
         val project = element.project
         val phpIndex = PhpIndex.getInstance(project)
 
-        return CqrsIndexUtil
-            .findCommandHandlers(element.fqn, project)
+        val classes = if (isQuery) {
+            CqrsIndexUtil.findQueryHandlers(element.fqn, project)
+        } else {
+            CqrsIndexUtil.findCommandHandlers(element.fqn, project)
+        }
+        return classes
             .map { toClassFqn(it) }
             .let { classes ->
                 val targets: NotNullLazyValue<Collection<PsiElement>> = NotNullLazyValue

@@ -7,11 +7,18 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.php.lang.psi.elements.PhpAttribute
 import com.jetbrains.php.lang.psi.elements.PhpClass
 
-class CqrsCommandHandlerImplicitUsageProvider : ImplicitUsageProvider {
-    override fun isImplicitUsage(element: PsiElement) = when(element) {
+class CqrsHandlersImplicitUsageProvider : ImplicitUsageProvider {
+    companion object {
+        private val handlers = listOf(
+            SpiralFrameworkClasses.CQRS_COMMAND_HANDLER,
+            SpiralFrameworkClasses.CQRS_QUERY_HANDLER,
+        )
+    }
+
+    override fun isImplicitUsage(element: PsiElement) = when (element) {
         is PhpClass -> PsiTreeUtil
             .findChildrenOfType(element, PhpAttribute::class.java)
-            .any { it.fqn == SpiralFrameworkClasses.CQRS_COMMAND_HANDLER }
+            .any { handlers.contains(it.fqn) }
 
         else -> false
     }
@@ -19,4 +26,6 @@ class CqrsCommandHandlerImplicitUsageProvider : ImplicitUsageProvider {
     override fun isImplicitRead(element: PsiElement) = false
 
     override fun isImplicitWrite(element: PsiElement) = false
+
+    override fun isClassWithCustomizedInitialization(element: PsiElement) = true
 }

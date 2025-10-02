@@ -58,14 +58,18 @@
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.router.index.RouterUrlsIndex"/>
         <implicitUsageProvider
-                implementation="com.github.xepozz.spiral.cqrs.CqrsCommandHandlerImplicitUsageProvider"/>
+                implementation="com.github.xepozz.spiral.cqrs.CqrsHandlersImplicitUsageProvider"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.cqrs.index.CqrsCommandIndex"/>
         <fileBasedIndex
                 implementation="com.github.xepozz.spiral.cqrs.index.CqrsCommandHandlerIndex"/>
+        <fileBasedIndex
+                implementation="com.github.xepozz.spiral.cqrs.index.CqrsQueryIndex"/>
+        <fileBasedIndex
+                implementation="com.github.xepozz.spiral.cqrs.index.CqrsQueryHandlerIndex"/>
         <codeInsight.lineMarkerProvider
                 language="PHP"
-                implementationClass="com.github.xepozz.spiral.cqrs.CqrsCommandHandlerLineMarkerProvider"/>
+                implementationClass="com.github.xepozz.spiral.cqrs.CqrsHandlersLineMarkerProvider"/>
     </extensions>
     <extensions defaultExtensionNs="com.jetbrains.php">
         <typeProvider4
