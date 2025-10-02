@@ -7,10 +7,9 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.PsiManagerEx
+import com.intellij.psi.impl.source.tree.injected.changesHandler.contentRange
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
 import kotlin.io.path.Path
 
@@ -71,11 +70,12 @@ class ViewFileReference(
     }
 
     override fun isSoft() = true
-    override fun getRangeInElement(): TextRange {
+    override fun calculateDefaultRangeInElement(): TextRange? {
+        val element = element as StringLiteralExpression
         val delimiterIndex = element.text.indexOf(':')
 
         return when (delimiterIndex) {
-            -1 -> element.textRangeInParent.shiftRight(1).grown(-2)
+            -1 -> element.contentRange.shiftLeft(element.textOffset)
             else -> TextRange(element.text.indexOf(':') + 1, element.text.length - 1)
         }
     }
