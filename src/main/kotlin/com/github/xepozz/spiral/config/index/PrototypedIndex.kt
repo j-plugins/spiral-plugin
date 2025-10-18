@@ -1,7 +1,7 @@
 package com.github.xepozz.spiral.config.index
 
-import com.github.xepozz.spiral.index.AbstractIndex
 import com.github.xepozz.spiral.SpiralFrameworkClasses
+import com.github.xepozz.spiral.index.AbstractIndex
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.search.GlobalSearchScope
