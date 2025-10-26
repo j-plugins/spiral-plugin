@@ -5,6 +5,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.ElementManipulators
 import com.jetbrains.php.lang.psi.elements.PhpClass
+import com.jetbrains.php.lang.psi.elements.PhpReference
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
 
 
@@ -24,3 +25,7 @@ fun PhpClass.getConsoleCommandName(): String? {
         ?.value
         ?.run { StringUtil.unquoteString(this) }
 }
+
+
+fun PhpReference.getSignatures(): Collection<String> = signature.split('|')
+fun PhpReference.hasSignature(signatureToFind: String): Boolean = getSignatures().any { it==signatureToFind }

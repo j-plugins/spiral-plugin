@@ -1,5 +1,7 @@
 package com.github.xepozz.spiral.views.references
 
+import com.github.xepozz.spiral.SpiralFrameworkClasses
+import com.github.xepozz.spiral.php.hasSignature
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
@@ -21,20 +23,29 @@ class ViewReferenceContributor : PsiReferenceContributor() {
                     PlatformPatterns.psiElement(MethodReference::class.java)
                 ),
             object : PsiReferenceProvider() {
+                val SIGNATURE = "#M#C${SpiralFrameworkClasses.VIEWS_INTERFACE}.render"
                 override fun getReferencesByElement(
                     element: PsiElement,
                     context: ProcessingContext
                 ): Array<out PsiReference?> {
+                    val element = element as StringLiteralExpression
+                    val methodReference = element.parent.parent as MethodReference
+
+                    if (methodReference.getParameter(0) != element) {
+//                        println("${element} is not a parameter")
+                        return emptyArray()
+                    }
+                    if (!methodReference.hasSignature(SIGNATURE)) {
+//                        println("${methodReference.getSignatures()} does not have $SIGNATURE signature")
+                        return emptyArray()
+                    }
+
 //                    println("reference: $element: ${element.text}")
 
-                    return when (element) {
-                        is StringLiteralExpression -> arrayOf(
-                            ViewNamespaceReference(element.contents, element),
-                            ViewFileReference(element.contents, element),
-                        )
-
-                        else -> PsiReference.EMPTY_ARRAY
-                    }
+                    return arrayOf(
+                        ViewNamespaceReference(element.contents, element),
+                        ViewFileReference(element.contents, element),
+                    )
                 }
             }
         )
