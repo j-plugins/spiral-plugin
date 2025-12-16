@@ -76,9 +76,12 @@
                 implementationClass="com.github.xepozz.spiral.cqrs.CqrsHandlersLineMarkerProvider"/>
 
         <directoryProjectGenerator
-                implementation="com.github.xepozz.spiral.scaffolder.project.SpiralProjectGenerator" />
+                implementation="com.github.xepozz.spiral.scaffolder.project.SpiralProjectGenerator"/>
         <moduleBuilder
-                builderClass="com.github.xepozz.spiral.scaffolder.project.SpiralModuleBuilder" />
+                builderClass="com.github.xepozz.spiral.scaffolder.project.SpiralModuleBuilder"/>
+
+        <microservices.endpointsProvider
+                implementation="com.github.xepozz.spiral.router.endpoints.SpiralEndpointsProvider"/>
     </extensions>
     <extensions defaultExtensionNs="com.jetbrains.php">
         <typeProvider4

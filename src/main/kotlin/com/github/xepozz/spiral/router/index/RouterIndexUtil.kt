@@ -5,7 +5,9 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
+import com.jetbrains.php.PhpIndexImpl
 import com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
+import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
 
 object RouterIndexUtil {
@@ -35,5 +37,14 @@ object RouterIndexUtil {
                 fileBasedIndex
                     .getValues(RouterUrlsIndex.key, it, allScope)
             }
+    }
+
+    fun getControllerMethodByFqn(project: Project, fqn: String): Collection<Method> {
+        val (className, methodName) = fqn.split('.').apply { if (size != 2) return emptyList() }
+        val phpIndex = PhpIndexImpl.getInstance(project)
+
+        return phpIndex
+            .getAnyByFQN(className)
+            .mapNotNull { it.findMethodByName(methodName) }
     }
 }
