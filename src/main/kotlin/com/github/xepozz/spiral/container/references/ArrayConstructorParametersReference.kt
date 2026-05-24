@@ -7,7 +7,6 @@ import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
 import com.jetbrains.php.PhpIndex
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
-import kotlin.collections.toList
 
 class ArrayConstructorParametersReference(
     val classFqn: String,
@@ -15,40 +14,33 @@ class ArrayConstructorParametersReference(
     element: StringLiteralExpression,
 ) : PsiPolyVariantReferenceBase<PsiElement>(element) {
     override fun getVariants(): Array<out Any> {
-        println("lookup for class: $classFqn, property: $property")
+        if (!element.isValid) return emptyArray()
         val project = element.project
         val classes = PhpIndex.getInstance(project).getClassesByFQN(classFqn)
         if (classes.isEmpty()) return emptyArray()
 
         return classes
             .mapNotNull { it.constructor }
-            .apply { println("variants: $this") }
             .flatMap { it.parameters.toList() }
-//            .map { LookupElementBuilder.create(it) }
             .toTypedArray()
-//            .run { this.toTypedArray() }
     }
 
     override fun isSoft() = true
-//    override fun getRangeInElement(): TextRange =
-    override fun calculateDefaultRangeInElement(): TextRange? {
+
+    override fun calculateDefaultRangeInElement(): TextRange {
         return TextRange(1, element.textLength - 1)
     }
+
     override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
+        if (!element.isValid) return ResolveResult.EMPTY_ARRAY
         val project = element.project
         val classes = PhpIndex.getInstance(project).getClassesByFQN(classFqn)
-        if (classes.isEmpty()) return emptyArray()
+        if (classes.isEmpty()) return ResolveResult.EMPTY_ARRAY
 
-//        return emptyArray()
         return classes
             .mapNotNull { it.constructor?.parameters }
             .flatMap { it.toList() }
             .filter { it.name == property }
             .run { PsiElementResolveResult.createResults(this) }
-
-//            .flatMap { it.fields }
-//            .filter { it.name == property }
-//            .run { PsiElementResolveResult.createResults(this) }
     }
-
 }

@@ -1,5 +1,6 @@
 package com.github.xepozz.spiral.scaffolder.project
 
+import com.github.xepozz.spiral.SpiralBundle
 import com.intellij.ide.util.projectWizard.SettingsStep
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
@@ -22,15 +23,15 @@ class SpiralProjectPeer() : GeneratorPeerImpl<SpiralProjectGeneratorSettings>() 
     val mySettings = SpiralProjectGeneratorSettings()
 
     val myPanel = panel {
-        row("Template") {
-            comboBox(listOf("spiral/app"))
+        row(SpiralBundle.message("spiral.project.peer.template")) {
+            comboBox(listOf(DEFAULT_TEMPLATE))
                 .bindItem(mySettings::template.toNullableProperty())
         }
-        row("Version") {
+        row(SpiralBundle.message("spiral.project.peer.version")) {
             comboBox(versions)
                 .bindItem(mySettings::version.toNullableProperty())
         }
-        row("Create Git") {
+        row(SpiralBundle.message("spiral.project.peer.createGit")) {
             checkBox("")
                 .bindSelected(mySettings::createGit)
         }
@@ -40,7 +41,7 @@ class SpiralProjectPeer() : GeneratorPeerImpl<SpiralProjectGeneratorSettings>() 
         ApplicationManager.getApplication().invokeLater {
             ReadAction.nonBlocking(Callable {
                 PhpComposerPackageVersionsProvider
-                    .fetchPackageVersions("spiral/app")
+                    .fetchPackageVersions(DEFAULT_TEMPLATE)
                     .sortedWith(ComposerPackage.VERSIONS_COMPARATOR)
                     .apply { versions.add(this) }
             })
@@ -63,5 +64,9 @@ class SpiralProjectPeer() : GeneratorPeerImpl<SpiralProjectGeneratorSettings>() 
     override fun validate(): ValidationInfo? {
         myPanel.validate()
         return myPanel.validateAll().firstOrNull()
+    }
+
+    companion object {
+        const val DEFAULT_TEMPLATE = "spiral/app"
     }
 }

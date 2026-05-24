@@ -1,9 +1,11 @@
 package com.github.xepozz.spiral.views
 
+import com.github.xepozz.spiral.SpiralBundle
 import com.github.xepozz.spiral.SpiralIcons
 import com.github.xepozz.spiral.SpiralViewUtil
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.project.DumbService
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.xml.XmlTag
@@ -16,6 +18,7 @@ class ComponentTagNameProvider : XmlTagNameProvider {
         prefix: String?
     ) {
         val project = tag.project
+        if (DumbService.isDumb(project)) return
 
         val result = mutableListOf<String>()
         FilenameIndex.processAllFileNames(
@@ -35,7 +38,7 @@ class ComponentTagNameProvider : XmlTagNameProvider {
             .map {
                 LookupElementBuilder.create(it)
                     .withIcon(SpiralIcons.SPIRAL)
-                    .withTypeText("Spiral Component")
+                    .withTypeText(SpiralBundle.message("spiral.views.component.typeText"))
             }
             .apply { elements.addAll(this) }
     }

@@ -23,7 +23,6 @@ class ViewReferenceContributor : PsiReferenceContributor() {
                     PlatformPatterns.psiElement(MethodReference::class.java)
                 ),
             object : PsiReferenceProvider() {
-                val SIGNATURE = "#M#C${SpiralFrameworkClasses.VIEWS_INTERFACE}.render"
                 override fun getReferencesByElement(
                     element: PsiElement,
                     context: ProcessingContext
@@ -32,15 +31,11 @@ class ViewReferenceContributor : PsiReferenceContributor() {
                     val methodReference = element.parent.parent as MethodReference
 
                     if (methodReference.getParameter(0) != element) {
-//                        println("${element} is not a parameter")
                         return emptyArray()
                     }
-                    if (!methodReference.hasSignature(SIGNATURE)) {
-//                        println("${methodReference.getSignatures()} does not have $SIGNATURE signature")
+                    if (!methodReference.hasSignature(SpiralFrameworkClasses.VIEWS_RENDER_SIGNATURE)) {
                         return emptyArray()
                     }
-
-//                    println("reference: $element: ${element.text}")
 
                     return arrayOf(
                         ViewNamespaceReference(element.contents, element),

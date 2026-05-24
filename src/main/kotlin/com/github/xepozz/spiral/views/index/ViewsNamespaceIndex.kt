@@ -30,8 +30,6 @@ class ViewsNamespaceIndex : AbstractIndex<ViewsNamespaceIndexType>() {
         val key = ID.create<String, ViewsNamespaceIndexType>("Spiral.ViewsNamespace")
     }
 
-//    override fun getVersion() = 3
-
     override fun getName() = key
 
     override fun getValueExternalizer() = EnumeratorStringDescriptor.INSTANCE

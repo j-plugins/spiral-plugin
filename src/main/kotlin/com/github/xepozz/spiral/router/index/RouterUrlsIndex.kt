@@ -1,19 +1,8 @@
 package com.github.xepozz.spiral.router.index
 
-import com.github.xepozz.spiral.SpiralFrameworkClasses
-import com.github.xepozz.spiral.SpiralViewUtil
-import com.github.xepozz.spiral.index.AbstractIndex
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.indexing.DataIndexer
-import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileContent
 import com.intellij.util.indexing.ID
-import com.intellij.util.io.EnumeratorStringDescriptor
-import com.jetbrains.php.lang.PhpFileType
-import com.jetbrains.php.lang.psi.elements.Method
-import com.jetbrains.php.lang.psi.elements.PhpAttribute
-import com.jetbrains.php.lang.psi.elements.PhpNamedElement
 
 class RouterUrlsIndex : AbstractRouterIndex() {
     companion object {
@@ -23,8 +12,13 @@ class RouterUrlsIndex : AbstractRouterIndex() {
     override fun getName() = key
 
     override fun getIndexer() = DataIndexer<String, RouterIndexType, FileContent> { inputData ->
+        // Disambiguate the key by appending the route's positional index so that
+        // multiple routes sharing the same URI within a single file (e.g. GET /x
+        // and POST /x on different methods) are not collapsed by associateBy.
+        // Callers iterate all keys via FileBasedIndex.getAllKeys + getValues, so
+        // the literal key shape is not used as a direct lookup.
         parseRoutes(inputData)
-            .associateBy { it.uri }
-//            .apply { println("file: ${inputData.file}, result: $this") }
+            .withIndex()
+            .associate { (i, route) -> "${route.uri}#$i" to route }
     }
 }

@@ -8,4 +8,8 @@ data class Route(
     val methods: Collection<String>,
     val fqn: String,
     val group: String?,
-) : Serializable
+) : Serializable {
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
+}
