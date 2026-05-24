@@ -5,6 +5,7 @@ import com.github.xepozz.spiral.SpiralIcons
 import com.github.xepozz.spiral.config.index.PrototypedIndex
 import com.github.xepozz.spiral.php.hasTrait
 import com.intellij.codeInsight.completion.CompletionContributor
+import com.intellij.openapi.project.DumbService
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
@@ -39,6 +40,7 @@ class PrototypedCompletion : CompletionContributor() {
                 ) {
                     val element = parameters.position.parent as? FieldReference ?: return
                     val project = element.project
+                    if (DumbService.isDumb(project)) return
 
                     val phpClass = PsiTreeUtil.getParentOfType(element, PhpClass::class.java) ?: return
                     if (!phpClass.hasTrait(SpiralFrameworkClasses.PROTOTYPE_TRAIT)) return

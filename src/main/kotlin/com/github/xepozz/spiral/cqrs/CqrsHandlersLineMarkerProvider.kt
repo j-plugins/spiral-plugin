@@ -6,6 +6,7 @@ import com.github.xepozz.spiral.php.hasInterface
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.NotNullLazyValue
 import com.intellij.psi.PsiElement
 import com.jetbrains.php.PhpIndex
@@ -24,6 +25,7 @@ class CqrsHandlersLineMarkerProvider : RelatedItemLineMarkerProvider() {
         if (!isCommand && !isQuery) return null
 
         val project = phpClass.project
+        if (DumbService.isDumb(project)) return null
         val phpIndex = PhpIndex.getInstance(project)
 
         val classes = if (isQuery) {
