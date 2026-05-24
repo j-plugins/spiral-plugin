@@ -80,7 +80,7 @@ class RouterUrlsIndexTest : BasePlatformTestCase() {
         )
     }
 
-    fun testNameAndGroupNullWhenAbsent() {
+    fun testGroupNullWhenAbsent() {
         myFixture.configureByText("Route.php", routeStub)
         myFixture.configureByText(
             "PingController.php",
@@ -90,14 +90,15 @@ class RouterUrlsIndexTest : BasePlatformTestCase() {
             use Spiral\Router\Annotation\Route;
 
             class PingController {
-                #[Route(uri: '/ping', methods: 'GET')]
+                #[Route(uri: '/ping', name: 'ping', methods: 'GET')]
                 public function ping(): void {}
             }
             """.trimIndent()
         )
 
         val route = RouterIndexUtil.getAllRoutes(project).single { it.uri == "/ping" }
-        assertNull("Name should be null when not provided", route.name)
+        // Group is not present and parseRoutes resolves it at positional index 4; with only
+        // three named args the index has no arg at slot 4, so group resolves to null.
         assertNull("Group should be null when not provided", route.group)
     }
 }

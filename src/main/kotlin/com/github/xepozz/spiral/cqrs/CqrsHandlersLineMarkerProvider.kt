@@ -13,21 +13,23 @@ import com.jetbrains.php.lang.psi.elements.PhpClass
 
 class CqrsHandlersLineMarkerProvider : RelatedItemLineMarkerProvider() {
     override fun getLineMarkerInfo(element: PsiElement): RelatedItemLineMarkerInfo<*>? {
-        val element = element as? PhpClass ?: return null
+        // IntelliJ Platform invokes line marker providers on leaf PSI elements (per the
+        // "anchor to identifier" guideline). The class-name leaf is the identifier; its
+        // parent is the PhpClass we actually want to inspect.
+        val phpClass = element.parent as? PhpClass ?: return null
+        if (phpClass.nameIdentifier != element) return null
 
-        val isCommand = element.hasInterface(SpiralFrameworkClasses.CQRS_COMMAND)
-        val isQuery = element.hasInterface(SpiralFrameworkClasses.CQRS_QUERY)
+        val isCommand = phpClass.hasInterface(SpiralFrameworkClasses.CQRS_COMMAND)
+        val isQuery = phpClass.hasInterface(SpiralFrameworkClasses.CQRS_QUERY)
         if (!isCommand && !isQuery) return null
 
-        val nameIdentifier = element.nameIdentifier ?: return null
-
-        val project = element.project
+        val project = phpClass.project
         val phpIndex = PhpIndex.getInstance(project)
 
         val classes = if (isQuery) {
-            CqrsIndexUtil.findQueryHandlers(element.fqn, project)
+            CqrsIndexUtil.findQueryHandlers(phpClass.fqn, project)
         } else {
-            CqrsIndexUtil.findCommandHandlers(element.fqn, project)
+            CqrsIndexUtil.findCommandHandlers(phpClass.fqn, project)
         }
         return classes
             .map { toClassFqn(it) }
@@ -39,7 +41,7 @@ class CqrsHandlersLineMarkerProvider : RelatedItemLineMarkerProvider() {
                 NavigationGutterIconBuilder.create(SpiralIcons.SPIRAL)
                     .setTargets(targets)
                     .setTooltipText("Navigate to handler")
-                    .createLineMarkerInfo(nameIdentifier)
+                    .createLineMarkerInfo(element)
             }
     }
 

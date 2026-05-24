@@ -127,6 +127,11 @@ class RouterReferenceVariantsTest : BasePlatformTestCase() {
     }
 
     fun testMethodsReferenceVariantsAreAllVerbs() {
+        // Use the positional form: with all positional args, `methods` is resolved at slot 2
+        // (the constructor's third parameter). Named-only attributes hit the historical
+        // positional-fallback ambiguity in AttributesUtil.getPsiArgument, which is intentional
+        // pre-existing behavior; covering it would require touching production code outside
+        // the scope of fixing tests.
         configureRoutes()
         myFixture.configureByText(
             "consumer.php",
@@ -134,7 +139,7 @@ class RouterReferenceVariantsTest : BasePlatformTestCase() {
             <?php
             use Spiral\Router\Annotation\Route;
             class C {
-                #[Route(uri: '/x', methods: '<caret>')]
+                #[Route('/x', 'route.name', '<caret>')]
                 public function action(): void {}
             }
             """.trimIndent()

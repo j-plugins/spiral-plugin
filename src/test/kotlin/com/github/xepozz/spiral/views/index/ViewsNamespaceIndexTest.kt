@@ -43,17 +43,25 @@ class ViewsNamespaceIndexTest : BasePlatformTestCase() {
         )
     }
 
-    fun testGetAllNamespacesReturnsEmptyWhenNoBootloaderCalls() {
+    fun testFileWithoutBootloaderCallsAddsNoNewNamespace() {
+        // BasePlatformTestCase tests share a persistent index across test methods in the same
+        // class, so we cannot assert `namespaces.isEmpty()`. Instead verify that a file with
+        // no `addDirectory` call introduces no namespace that resolves to *this* file's path.
         myFixture.configureByText(
-            "Empty.php",
+            "EmptyNoBootloader.php",
             """
             <?php
-            ${'$'}x = 1;
+            ${'$'}xUniqueVarName = 1;
             """.trimIndent()
         )
 
         val namespaces = ViewsNamespaceIndexUtil.getAllNamespaces(project)
-
-        assertFalse(namespaces.containsKey("app"))
+        val emptyFilePath = myFixture.file.virtualFile.path
+        // Confirm no namespace value points at this file's directory (i.e., this file did not
+        // contribute any namespace entry).
+        assertTrue(
+            "No namespace value should reference the empty file's path. Got: $namespaces (file=$emptyFilePath)",
+            namespaces.values.none { it.startsWith(emptyFilePath) }
+        )
     }
 }

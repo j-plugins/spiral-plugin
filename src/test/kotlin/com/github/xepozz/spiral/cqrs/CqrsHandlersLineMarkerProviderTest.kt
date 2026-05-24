@@ -6,27 +6,25 @@ import com.jetbrains.php.lang.PhpFileType
 class CqrsHandlersLineMarkerProviderTest : BasePlatformTestCase() {
 
     fun testGutterAppearsOnCommandClass() {
-        // CommandInterface stub
-        myFixture.configureByText(
-            PhpFileType.INSTANCE,
+        // Stubs in dedicated files so PhpIndex sees them on lookup.
+        myFixture.addFileToProject(
+            "stubs/CommandInterface.php",
             """
             <?php
             namespace Spiral\Cqrs;
             interface CommandInterface {}
             """.trimIndent()
         )
-        // CommandHandler attribute stub
-        myFixture.configureByText(
-            PhpFileType.INSTANCE,
+        myFixture.addFileToProject(
+            "stubs/CommandHandler.php",
             """
             <?php
             namespace Spiral\Cqrs\Attribute;
             #[\Attribute] class CommandHandler {}
             """.trimIndent()
         )
-        // Handler indexed by file-based index
-        myFixture.configureByText(
-            PhpFileType.INSTANCE,
+        myFixture.addFileToProject(
+            "src/Handler/CreateUserHandler.php",
             """
             <?php
             namespace App\Handler;
@@ -51,10 +49,12 @@ class CqrsHandlersLineMarkerProviderTest : BasePlatformTestCase() {
             """.trimIndent()
         )
 
-        val gutters = myFixture.findGuttersAtCaret()
+        myFixture.doHighlighting()
+        val allGutters = myFixture.findAllGutters()
+        val gutterTexts = allGutters.map { it.tooltipText }
         assertTrue(
-            "Expected at least one gutter on the command class identifier; tooltips=${gutters.map { it.tooltipText }}",
-            gutters.any { it.tooltipText?.contains("Navigate to handler") == true }
+            "Expected at least one 'Navigate to handler' gutter on the file; tooltips=$gutterTexts",
+            gutterTexts.any { it?.contains("Navigate to handler") == true }
         )
     }
 
@@ -67,10 +67,12 @@ class CqrsHandlersLineMarkerProviderTest : BasePlatformTestCase() {
             class Plain<caret>Class {}
             """.trimIndent()
         )
-        val gutters = myFixture.findGuttersAtCaret()
+        myFixture.doHighlighting()
+        val allGutters = myFixture.findAllGutters()
+        val gutterTexts = allGutters.map { it.tooltipText }
         assertTrue(
-            "Plain class should not get a CQRS handler gutter, got: ${gutters.map { it.tooltipText }}",
-            gutters.none { it.tooltipText?.contains("Navigate to handler") == true }
+            "Plain class should not get a CQRS handler gutter, got: $gutterTexts",
+            gutterTexts.none { it?.contains("Navigate to handler") == true }
         )
     }
 }

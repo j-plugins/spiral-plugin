@@ -4,6 +4,12 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
 class EnvFoldingBuilderTest : BasePlatformTestCase() {
 
+    private fun buildFoldRegions(): List<com.intellij.lang.folding.FoldingDescriptor> {
+        val builder = EnvFoldingBuilder()
+        val descriptors = builder.buildFoldRegions(myFixture.file, myFixture.editor.document, false)
+        return descriptors.filterNotNull()
+    }
+
     fun testEnvFunctionCallIsFolded() {
         myFixture.configureByText(
             "env_usage.php",
@@ -14,10 +20,10 @@ class EnvFoldingBuilderTest : BasePlatformTestCase() {
             ${'$'}value = env('APP_DEBUG');
             """.trimIndent()
         )
-        val foldRegions = myFixture.editor.foldingModel.allFoldRegions
+        val descriptors = buildFoldRegions()
         assertTrue(
-            "Expected at least one fold region for env() call",
-            foldRegions.any { it.placeholderText == "env: 'APP_DEBUG'" }
+            "Expected at least one fold region for env() call; got: ${descriptors.map { it.placeholderText }}",
+            descriptors.any { it.placeholderText == "env: 'APP_DEBUG'" }
         )
     }
 
@@ -31,10 +37,10 @@ class EnvFoldingBuilderTest : BasePlatformTestCase() {
             ${'$'}value = env();
             """.trimIndent()
         )
-        val foldRegions = myFixture.editor.foldingModel.allFoldRegions
+        val descriptors = buildFoldRegions()
         assertTrue(
-            "env() with no arguments must not be folded",
-            foldRegions.none { it.placeholderText.startsWith("env") }
+            "env() with no arguments must not be folded; got: ${descriptors.map { it.placeholderText }}",
+            descriptors.none { (it.placeholderText ?: "").startsWith("env") }
         )
     }
 
@@ -48,10 +54,10 @@ class EnvFoldingBuilderTest : BasePlatformTestCase() {
             ${'$'}value = foo('APP_DEBUG');
             """.trimIndent()
         )
-        val foldRegions = myFixture.editor.foldingModel.allFoldRegions
+        val descriptors = buildFoldRegions()
         assertTrue(
-            "Unrelated function call must not be folded",
-            foldRegions.none { it.placeholderText.startsWith("env") }
+            "Unrelated function call must not be folded; got: ${descriptors.map { it.placeholderText }}",
+            descriptors.none { (it.placeholderText ?: "").startsWith("env") }
         )
     }
 }

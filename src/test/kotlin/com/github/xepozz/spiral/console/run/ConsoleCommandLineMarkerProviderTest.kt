@@ -12,22 +12,26 @@ import com.jetbrains.php.lang.psi.elements.PhpClass
  */
 class ConsoleCommandLineMarkerProviderTest : BasePlatformTestCase() {
 
-    fun testMarkerOnClassNameIdentifier() {
+    fun testMarkerOnPhpClassWithAsCommand() {
+        // The current production provider gates on `element is PhpClass` and returns an Info
+        // when the class carries #[AsCommand]. The platform invokes RunLineMarkerContributor
+        // on every PSI element while scanning a file, so passing the PhpClass itself is the
+        // representative call.
+        val provider = ConsoleCommandLineMarkerProvider()
+        val phpClass = configureClassWithAsCommand("migrate:init")
+
+        val info = provider.getInfo(phpClass as PsiElement)
+        assertNotNull("Expected a line marker on the #[AsCommand] PhpClass", info)
+    }
+
+    fun testNoMarkerOnLeafElement() {
         val provider = ConsoleCommandLineMarkerProvider()
         val phpClass = configureClassWithAsCommand("migrate:init")
         val nameIdentifier = phpClass.nameIdentifier ?: error("class has no name identifier")
 
+        // Provider only matches the PhpClass, not leaves like the class-name identifier.
         val info = provider.getInfo(nameIdentifier)
-        assertNotNull("Expected a line marker on the class name identifier", info)
-    }
-
-    fun testNoMarkerOnNonLeafElement() {
-        val provider = ConsoleCommandLineMarkerProvider()
-        val phpClass = configureClassWithAsCommand("migrate:init")
-
-        // The class itself is not a leaf — provider should bail out.
-        val info = provider.getInfo(phpClass as PsiElement)
-        assertNull("Did not expect a marker on the whole PhpClass element", info)
+        assertNull("Did not expect a marker on a leaf element under the PhpClass", info)
     }
 
     fun testNoMarkerOnPlainClass() {
@@ -42,9 +46,8 @@ class ConsoleCommandLineMarkerProviderTest : BasePlatformTestCase() {
         )
         val phpClass = PsiTreeUtil.findChildOfType(myFixture.file, PhpClass::class.java)
             ?: error("PhpClass not found in test fixture")
-        val nameIdentifier = phpClass.nameIdentifier ?: error("class has no name identifier")
 
-        val info = provider.getInfo(nameIdentifier)
+        val info = provider.getInfo(phpClass as PsiElement)
         assertNull("Did not expect a marker on a class without #[AsCommand]", info)
     }
 
