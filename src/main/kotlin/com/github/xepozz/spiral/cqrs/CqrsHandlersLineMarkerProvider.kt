@@ -1,5 +1,6 @@
 package com.github.xepozz.spiral.cqrs
 
+import com.github.xepozz.spiral.SpiralBundle
 import com.github.xepozz.spiral.SpiralFrameworkClasses
 import com.github.xepozz.spiral.SpiralIcons
 import com.github.xepozz.spiral.php.hasInterface
@@ -35,16 +36,20 @@ class CqrsHandlersLineMarkerProvider : RelatedItemLineMarkerProvider() {
                 val targets: NotNullLazyValue<Collection<PsiElement>> = NotNullLazyValue
                     .createValue { classes.flatMap { phpIndex.getAnyByFQN(it) } }
 
-                // todo: replace with more suitable icon
                 NavigationGutterIconBuilder.create(SpiralIcons.SPIRAL)
                     .setTargets(targets)
-                    .setTooltipText("Navigate to handler")
+                    .setTooltipText(SpiralBundle.message("cqrs.line.marker.tooltip"))
                     .createLineMarkerInfo(nameIdentifier)
             }
     }
 
     /**
-     * 99% command handler targets to __invoke method, so we can just remove method part of FQN.
+     * Extracts class FQN from a handler method FQN (e.g. `\Class\Name.__invoke` -> `\Class\Name`).
+     * 99% of CQRS handlers target `__invoke`, so the indexed value is always a method FQN with a
+     * dot separator. If no dot is present, the original string is returned as a graceful fallback.
      */
-    private fun toClassFqn(fqn: String): String = fqn.substringBeforeLast('.')
+    private fun toClassFqn(fqn: String): String {
+        val lastDot = fqn.lastIndexOf('.')
+        return if (lastDot > 0) fqn.substring(0, lastDot) else fqn
+    }
 }

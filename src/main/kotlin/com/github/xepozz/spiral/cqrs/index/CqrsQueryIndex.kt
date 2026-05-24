@@ -34,16 +34,14 @@ class CqrsQueryIndex : AbstractIndex<QueryType>() {
             .let { PsiTreeUtil.findChildrenOfType(it, PhpAttribute::class.java) }
             .find { it.fqn == SpiralFrameworkClasses.CQRS_QUERY_HANDLER }
             .let { it?.owner as? Method }
-            ?.let {
-                val command = it.getParameter(0)
-                    .let { PsiTreeUtil.findChildrenOfType(it, ClassReference::class.java) }
-                    .firstOrNull()
+            ?.let { method ->
+                val query = method.getParameter(0)
+                    ?.let { PsiTreeUtil.findChildrenOfType(it, ClassReference::class.java) }
+                    ?.firstOrNull()
                     ?.fqn
-                    ?: return@let null
-                mapOf(command to it.fqn)
+                if (query != null) mapOf(query to method.fqn) else emptyMap()
             }
             ?: emptyMap()
-//            .associate { it.first to it.second }
     }
 
 }

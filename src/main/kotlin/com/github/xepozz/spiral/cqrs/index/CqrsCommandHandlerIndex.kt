@@ -20,7 +20,7 @@ class CqrsCommandHandlerIndex : AbstractIndex<CommandHandlerType>() {
         val key = ID.create<String, CommandHandlerType>("Spiral.Cqrs.CommandHandler")
     }
 
-    override fun getVersion() = 2
+    override fun getVersion() = 3
 
     override fun getName() = key
 
@@ -34,16 +34,14 @@ class CqrsCommandHandlerIndex : AbstractIndex<CommandHandlerType>() {
             .let { PsiTreeUtil.findChildrenOfType(it, PhpAttribute::class.java) }
             .find { it.fqn == SpiralFrameworkClasses.CQRS_COMMAND_HANDLER }
             .let { it?.owner as? Method }
-            ?.let {
-                val command = it.getParameter(0)
-                    .let { PsiTreeUtil.findChildrenOfType(it, ClassReference::class.java) }
-                    .firstOrNull()
+            ?.let { method ->
+                val command = method.getParameter(0)
+                    ?.let { PsiTreeUtil.findChildrenOfType(it, ClassReference::class.java) }
+                    ?.firstOrNull()
                     ?.fqn
-                    ?: ""
-                mapOf(it.fqn to command)
+                if (command != null) mapOf(method.fqn to command) else emptyMap()
             }
             ?: emptyMap()
-//            .associate { it.first to it.second }
     }
 
 }

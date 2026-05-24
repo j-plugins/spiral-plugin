@@ -34,16 +34,14 @@ class CqrsCommandIndex : AbstractIndex<CommandType>() {
             .let { PsiTreeUtil.findChildrenOfType(it, PhpAttribute::class.java) }
             .find { it.fqn == SpiralFrameworkClasses.CQRS_COMMAND_HANDLER }
             .let { it?.owner as? Method }
-            ?.let {
-                val command = it.getParameter(0)
-                    .let { PsiTreeUtil.findChildrenOfType(it, ClassReference::class.java) }
-                    .firstOrNull()
+            ?.let { method ->
+                val command = method.getParameter(0)
+                    ?.let { PsiTreeUtil.findChildrenOfType(it, ClassReference::class.java) }
+                    ?.firstOrNull()
                     ?.fqn
-                    ?: return@let null
-                mapOf(command to it.fqn)
+                if (command != null) mapOf(command to method.fqn) else emptyMap()
             }
             ?: emptyMap()
-//            .associate { it.first to it.second }
     }
 
 }
