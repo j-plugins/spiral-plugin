@@ -19,4 +19,7 @@ object SpiralFrameworkClasses {
     const val CQRS_COMMAND = "\\Spiral\\Cqrs\\CommandInterface"
     const val CQRS_QUERY_HANDLER = "\\Spiral\\Cqrs\\Attribute\\QueryHandler"
     const val CQRS_QUERY = "\\Spiral\\Cqrs\\QueryInterface"
+
+    const val ENV_FUNCTION = "\\env"
+    const val AUTOWIRE = "\\Spiral\\Core\\Container\\Autowire"
 }

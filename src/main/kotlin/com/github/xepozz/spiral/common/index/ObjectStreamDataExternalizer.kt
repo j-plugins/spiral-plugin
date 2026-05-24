@@ -1,5 +1,6 @@
 package com.github.xepozz.spiral.common.index
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.DataExternalizer
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -32,13 +33,19 @@ class ObjectStreamDataExternalizer<T : Any> : DataExternalizer<T> {
         val stream = ByteArrayInputStream(buffer)
         val input: ObjectInput = ObjectInputStream(stream)
 
-        var `object`: T? = null
-        try {
-            `object` = input.readObject() as T
-        } catch (ignored: ClassNotFoundException) {
-        } catch (ignored: ClassCastException) {
+        return try {
+            @Suppress("UNCHECKED_CAST")
+            input.readObject() as T
+        } catch (e: ClassNotFoundException) {
+            LOG.warn("Failed to deserialize index value: class not found", e)
+            null
+        } catch (e: ClassCastException) {
+            LOG.warn("Failed to deserialize index value: unexpected type", e)
+            null
         }
+    }
 
-        return `object`
+    companion object {
+        private val LOG = Logger.getInstance(ObjectStreamDataExternalizer::class.java)
     }
 }

@@ -16,16 +16,14 @@ val StringLiteralExpression.contentRange: TextRange
     get() = ElementManipulators.getValueTextRange(this).shiftRight(textRange.startOffset)
 
 fun PhpClass.getConsoleCommandName(): String? {
-    return this
-        .getAttributes(SpiralFrameworkClasses.AS_COMMAND)
-        .firstOrNull()
-        ?.arguments
-        ?.run { this.find { it.name == "name" } ?: firstOrNull() }
-        ?.argument
-        ?.value
-        ?.run { StringUtil.unquoteString(this) }
+    val attribute = getAttributes(SpiralFrameworkClasses.AS_COMMAND).firstOrNull() ?: return null
+    val nameArgument = attribute.arguments.find { it.name == "name" }
+        ?: attribute.arguments.firstOrNull()
+        ?: return null
+    val rawValue = nameArgument.argument?.value ?: return null
+    return StringUtil.unquoteString(rawValue)
 }
 
 
 fun PhpReference.getSignatures(): Collection<String> = signature.split('|')
-fun PhpReference.hasSignature(signatureToFind: String): Boolean = getSignatures().any { it==signatureToFind }
+fun PhpReference.hasSignature(signatureToFind: String): Boolean = getSignatures().any { it == signatureToFind }
