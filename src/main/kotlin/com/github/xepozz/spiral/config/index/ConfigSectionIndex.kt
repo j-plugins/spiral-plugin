@@ -13,6 +13,14 @@ import com.jetbrains.php.lang.psi.elements.PhpClass
 
 private typealias ConfigSectionIndexType = String
 
+/**
+ * Indexes PHP classes that extend [SpiralFrameworkClasses.INJECTABLE_CONFIG] by their FQN.
+ *
+ * Dumb-mode contract: callers that query this index via [FileBasedIndex.getValues] /
+ * [FileBasedIndex.getAllKeys] MUST wrap the call in
+ * `DumbService.getInstance(project).runReadActionInSmartMode { ... }` (or otherwise guard
+ * against dumb mode) -- index access throws `IndexNotReadyException` during indexing.
+ */
 class ConfigSectionIndex : AbstractIndex<ConfigSectionIndexType>() {
     companion object {
         val key = ID.create<String, ConfigSectionIndexType>("Spiral.ConfigSection")

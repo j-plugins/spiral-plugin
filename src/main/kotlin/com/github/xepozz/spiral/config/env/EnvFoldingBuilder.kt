@@ -22,19 +22,18 @@ class EnvFoldingBuilder : FoldingBuilderEx() {
         document: Document,
         quick: Boolean
     ): Array<out FoldingDescriptor?> = PsiTreeUtil.findChildrenOfType(root, FunctionReference::class.java)
-        .mapNotNull {
-            if (it is MethodReference) {
-                if (it.name != "get") return@mapNotNull null
+        .mapNotNull { call ->
+            if (call is MethodReference) {
+                if (call.name != "get") return@mapNotNull null
 
-                val variable = it.classReference as? Variable ?: return@mapNotNull null
+                val variable = call.classReference as? Variable ?: return@mapNotNull null
                 if (variable.signature != environmentSignature) return@mapNotNull null
-                if (it.parameters.size < 1) return@mapNotNull null
             } else {
-                if (it.fqn != "\\env") return@mapNotNull null
-                if (it.parameters.size < 1) return@mapNotNull null
+                if (call.fqn != SpiralFrameworkClasses.ENV_FUNCTION) return@mapNotNull null
             }
-            val foldingDescriptor = FoldingDescriptor(it, it.textRange)
-            foldingDescriptor.placeholderText = "env: ${it.parameters[0].text}"
+            val firstArg = call.parameters.getOrNull(0) ?: return@mapNotNull null
+            val foldingDescriptor = FoldingDescriptor(call, call.textRange)
+            foldingDescriptor.placeholderText = "env: ${firstArg.text}"
             foldingDescriptor
         }
         .toTypedArray()
