@@ -1,5 +1,6 @@
 package com.github.xepozz.spiral.references
 
+import com.intellij.openapi.project.DumbService
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
@@ -20,26 +21,24 @@ class FunctionsReferenceContributor : PsiReferenceContributor() {
                     2,
                     PlatformPatterns
                         .psiElement(FunctionReference::class.java)
-//                        .withName("directory")
+                        .withName("directory")
                 ),
             object : PsiReferenceProvider() {
                 override fun getReferencesByElement(
                     element: PsiElement,
                     context: ProcessingContext
                 ): Array<out PsiReference> {
-                    val element = element as? StringLiteralExpression ?: return PsiReference.EMPTY_ARRAY
-                    val function = element.parent.parent as? FunctionReference ?: return PsiReference.EMPTY_ARRAY
+                    if (DumbService.isDumb(element.project)) return PsiReference.EMPTY_ARRAY
 
-//                    println("directory: ${element.text}, function: ${function.name}")
+                    val stringLiteral = element as? StringLiteralExpression ?: return PsiReference.EMPTY_ARRAY
+                    val function = stringLiteral.parent.parent as? FunctionReference ?: return PsiReference.EMPTY_ARRAY
 
                     return when (function.name) {
-                        "directory" -> arrayOf(DirectoryReference(element.contents, element))
+                        "directory" -> arrayOf(DirectoryReference(stringLiteral.contents, stringLiteral))
                         else -> PsiReference.EMPTY_ARRAY
                     }
-//                        .apply { println("references: $this") }
                 }
             }
         )
     }
 }
-
