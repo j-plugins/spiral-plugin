@@ -1,6 +1,7 @@
 package com.github.xepozz.spiral.prototyped
 
 import com.github.xepozz.spiral.config.index.PrototypedIndex
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -26,8 +27,9 @@ class PrototypedPropertyReference(
     override fun getRangeInElement() = range
 
     override fun getVariants(): Array<out Any?> {
-        val properties = PrototypedIndex.getPrototypes(element.project)
-        val phpIndex = PhpIndex.getInstance(element.project)
+        val project = element.project
+        if (DumbService.isDumb(project)) return emptyArray()
+        val properties = PrototypedIndex.getPrototypes(project)
 
         return properties.toTypedArray()
     }

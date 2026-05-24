@@ -34,7 +34,8 @@ class ObjectStreamDataExternalizer<T : Any> : DataExternalizer<T> {
 
         var `object`: T? = null
         try {
-            `object` = input.readObject() as T
+            @Suppress("UNCHECKED_CAST")
+            `object` = input.readObject() as T?
         } catch (ignored: ClassNotFoundException) {
         } catch (ignored: ClassCastException) {
         }
