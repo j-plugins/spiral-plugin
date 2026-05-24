@@ -4,6 +4,7 @@ import com.github.xepozz.spiral.SpiralBundle
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil
 import com.intellij.ide.util.projectWizard.WebProjectTemplate
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.debug
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile

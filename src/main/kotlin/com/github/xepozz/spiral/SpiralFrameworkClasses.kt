@@ -22,4 +22,6 @@ object SpiralFrameworkClasses {
 
     const val ENV_FUNCTION = "\\env"
     const val AUTOWIRE = "\\Spiral\\Core\\Container\\Autowire"
+
+    const val VIEWS_RENDER_SIGNATURE = "#M#C$VIEWS_INTERFACE.render"
 }
