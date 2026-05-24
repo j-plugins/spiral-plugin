@@ -13,11 +13,9 @@ import com.intellij.util.io.EnumeratorStringDescriptor
 import com.jetbrains.php.lang.PhpFileType
 import com.jetbrains.php.lang.psi.elements.PhpAttribute
 
-private typealias ConsoleCommandsIndexType = String
-
-class ConsoleCommandsIndex : AbstractIndex<ConsoleCommandsIndexType>() {
+class ConsoleCommandsIndex : AbstractIndex<String>() {
     companion object {
-        val key = ID.create<String, ConsoleCommandsIndexType>("Spiral.ConsoleCommands")
+        val key = ID.create<String, String>("Spiral.ConsoleCommands")
     }
 
     override fun getVersion() = 2
@@ -30,10 +28,8 @@ class ConsoleCommandsIndex : AbstractIndex<ConsoleCommandsIndexType>() {
         it.fileType == PhpFileType.INSTANCE && !it.name.endsWith(SpiralViewUtil.VIEW_SUFFIX)
     }
 
-    override fun getIndexer() = DataIndexer<String, ConsoleCommandsIndexType, FileContent> { inputData ->
-        inputData
-            .psiFile
-            .let { PsiTreeUtil.findChildrenOfType(it, PhpAttribute::class.java) }
+    override fun getIndexer() = DataIndexer<String, String, FileContent> { inputData ->
+        PsiTreeUtil.findChildrenOfType(inputData.psiFile, PhpAttribute::class.java)
             .filter { it.fqn == SpiralFrameworkClasses.AS_COMMAND }
             .mapNotNull { attribute ->
                 attribute.arguments
@@ -42,7 +38,7 @@ class ConsoleCommandsIndex : AbstractIndex<ConsoleCommandsIndexType>() {
                     ?.value
             }
             .map { StringUtil.unquoteString(it) }
+            .filter { it.isNotEmpty() }
             .associateBy { it }
-//            .apply { println("file: ${inputData.file}, result: $this") }
     }
 }

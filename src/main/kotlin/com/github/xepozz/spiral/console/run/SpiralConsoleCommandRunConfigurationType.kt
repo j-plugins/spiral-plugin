@@ -1,28 +1,25 @@
 package com.github.xepozz.spiral.console.run
 
+import com.github.xepozz.spiral.SpiralBundle
 import com.github.xepozz.spiral.SpiralIcons
-import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationTypeBase
-import com.intellij.openapi.project.Project
 
 class SpiralConsoleCommandRunConfigurationType : ConfigurationTypeBase(
     ID,
-    "Spiral Command",
-    "Runs console command",
+    SpiralBundle.message("configuration.type.name"),
+    SpiralBundle.message("configuration.type.description"),
     SpiralIcons.SPIRAL,
 ) {
     init {
-        addFactory(object : ConfigurationFactory(this) {
-            override fun getId() = ID
-
-            override fun createTemplateConfiguration(project: Project) =
-                SpiralConsoleCommandRunConfiguration(project, this, "Spiral")
-
-            override fun getOptionsClass() = SpiralConsoleCommandRunConfigurationSettings::class.java
-        })
+        addFactory(SpiralRunConfigurationFactory(this))
     }
 
     companion object {
+        /**
+         * IMPORTANT: This ID is persisted in users' workspace.xml as the configuration
+         * type identifier. Changing it will break every saved Spiral run configuration
+         * across all installations. DO NOT MODIFY.
+         */
         const val ID = "SpiralConsoleCommandRunConfiguration"
 
         val INSTANCE = SpiralConsoleCommandRunConfigurationType()

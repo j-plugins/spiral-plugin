@@ -5,25 +5,31 @@ import com.github.xepozz.spiral.php.getConsoleCommandName
 import com.intellij.execution.lineMarker.ExecutorAction
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
-import com.jetbrains.php.lang.psi.elements.Method
+import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.php.lang.psi.elements.PhpClass
 
 class ConsoleCommandLineMarkerProvider : RunLineMarkerContributor() {
-    override fun getInfo(element: PsiElement) = when {
-        element !is PhpClass -> null
-        else -> {
-            val commandName = element.getConsoleCommandName() ?: return null
-            Info(
-                AllIcons.Actions.Execute,
-                ExecutorAction.getActions(1),
-            ) {
-                SpiralBundle.message(
-                    "action.run.target.text",
-                    StringUtil.wrapWithDoubleQuote(SpiralBundle.message("action.run.target.command", commandName)),
-                )
-            }
+    override fun getInfo(element: PsiElement): Info? {
+        // RunLineMarkerContributor#getInfo is invoked on leaf elements; only the leaf
+        // identifier of the class declaration should carry the gutter icon, otherwise
+        // the icon would appear repeatedly on every descendant element.
+        if (element.firstChild != null) return null
+
+        val phpClass = PsiTreeUtil.getParentOfType(element, PhpClass::class.java) ?: return null
+        if (phpClass.nameIdentifier !== element) return null
+
+        // The line marker may be queried during indexing; bail out instead of touching
+        // PHP attribute machinery in dumb mode.
+        if (DumbService.isDumb(element.project)) return null
+
+        val commandName = phpClass.getConsoleCommandName() ?: return null
+        return Info(
+            AllIcons.Actions.Execute,
+            ExecutorAction.getActions(1),
+        ) {
+            SpiralBundle.message("action.run.target.text", commandName)
         }
     }
 }

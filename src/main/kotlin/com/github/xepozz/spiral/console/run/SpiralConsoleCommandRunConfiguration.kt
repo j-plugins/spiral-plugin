@@ -1,7 +1,9 @@
 package com.github.xepozz.spiral.console.run
 
+import com.github.xepozz.spiral.SpiralBundle
 import com.intellij.execution.configurations.ConfigurationFactory
-import com.intellij.execution.configurations.RunConfigurationOptions
+import com.intellij.execution.configurations.RuntimeConfigurationError
+import com.intellij.execution.configurations.RuntimeConfigurationException
 import com.intellij.openapi.project.Project
 import com.jetbrains.php.config.commandLine.PhpCommandSettings
 import com.jetbrains.php.run.PhpCommandLineRunConfiguration
@@ -15,7 +17,10 @@ class SpiralConsoleCommandRunConfiguration(
         envs: Map<String, String>,
         command: PhpCommandSettings
     ) {
-        val commandName = settings.commandName ?: return
+        val commandName = settings.commandName
+            ?.takeIf { it.isNotBlank() }
+            ?: throw RuntimeConfigurationError(SpiralBundle.message("run.config.error.commandName.empty"))
+
         command.setScript("app.php", false)
         command.addArgument(commandName)
 
@@ -23,13 +28,21 @@ class SpiralConsoleCommandRunConfiguration(
         command.addEnvs(envs)
     }
 
-    override fun getOptions() = super.getOptions() as SpiralConsoleCommandRunConfigurationSettings
-    override fun getOptionsClass(): Class<out RunConfigurationOptions> {
-        return SpiralConsoleCommandRunConfigurationSettings::class.java
+    @Throws(RuntimeConfigurationException::class)
+    override fun checkConfiguration() {
+        super.checkConfiguration()
+        if (settings.commandName.isNullOrBlank()) {
+            throw RuntimeConfigurationError(SpiralBundle.message("run.config.error.commandName.empty"))
+        }
     }
+
+    override fun getOptions(): SpiralConsoleCommandRunConfigurationSettings =
+        super.getOptions() as? SpiralConsoleCommandRunConfigurationSettings
+            ?: SpiralConsoleCommandRunConfigurationSettings()
+
+    override fun getOptionsClass() = SpiralConsoleCommandRunConfigurationSettings::class.java
 
     override fun getConfigurationEditor() = SpiralConsoleCommandSettingsEditor(project)
 
-    override fun createSettings() = SpiralConsoleCommandRunConfigurationSettings().apply {
-    }
+    override fun createSettings() = SpiralConsoleCommandRunConfigurationSettings()
 }

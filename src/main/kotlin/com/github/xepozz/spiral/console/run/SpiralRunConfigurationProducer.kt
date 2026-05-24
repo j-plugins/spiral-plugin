@@ -4,9 +4,10 @@ import com.github.xepozz.spiral.SpiralBundle
 import com.github.xepozz.spiral.php.getConsoleCommandName
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
+import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
-import com.jetbrains.php.lang.psi.elements.Method
+import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.php.lang.psi.elements.PhpClass
 
 class SpiralRunConfigurationProducer : LazyRunConfigurationProducer<SpiralConsoleCommandRunConfiguration>() {
@@ -15,8 +16,8 @@ class SpiralRunConfigurationProducer : LazyRunConfigurationProducer<SpiralConsol
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
-        val element = context.psiLocation as? PhpClass ?: return false
-        val commandName = element.getConsoleCommandName() ?: return false
+        val phpClass = findCommandClass(context) ?: return false
+        val commandName = phpClass.getConsoleCommandName() ?: return false
 
         configuration.settings.commandName = commandName
         configuration.name = SpiralBundle.message("action.run.target.command", commandName)
@@ -28,11 +29,22 @@ class SpiralRunConfigurationProducer : LazyRunConfigurationProducer<SpiralConsol
         configuration: SpiralConsoleCommandRunConfiguration,
         context: ConfigurationContext
     ): Boolean {
-        val method = context.psiLocation as? PhpClass ?: return false
+        val phpClass = findCommandClass(context) ?: return false
 
-        return configuration.settings.commandName == method.getConsoleCommandName()
+        return configuration.settings.commandName == phpClass.getConsoleCommandName()
     }
 
-    override fun getConfigurationFactory() =
-        SpiralRunConfigurationFactory(SpiralConsoleCommandRunConfigurationType.INSTANCE)
+    override fun getConfigurationFactory(): ConfigurationFactory =
+        SpiralConsoleCommandRunConfigurationType.INSTANCE.configurationFactories.first()
+
+    /**
+     * Resolves the [PhpClass] that owns the context's PSI location. The user may have
+     * the caret on a leaf token within the class declaration, so we walk up the tree
+     * rather than restricting to direct class hits.
+     */
+    private fun findCommandClass(context: ConfigurationContext): PhpClass? {
+        val location = context.psiLocation ?: return null
+        return location as? PhpClass
+            ?: PsiTreeUtil.getParentOfType(location, PhpClass::class.java)
+    }
 }

@@ -15,13 +15,13 @@ class SpiralRunAnythingProvider : RunAnythingAnActionProvider<SpiralRunCommandAc
     override fun getCommand(value: SpiralRunCommandAction) =
         SpiralBundle.message("action.run.target.command", value.commandName)
 
-    override fun getHelpCommandPlaceholder() = "spiral <command>"
+    override fun getHelpCommandPlaceholder() = SpiralBundle.message("run.anything.placeholder")
 
-    override fun getCompletionGroupTitle() = "Spiral"
+    override fun getCompletionGroupTitle() = SpiralBundle.message("run.anything.group.title")
 
-    override fun getHelpCommand() = "spiral"
+    override fun getHelpCommand() = SpiralBundle.message("run.anything.help.command")
 
-    override fun getHelpGroupTitle() = "PHP"
+    override fun getHelpGroupTitle() = SpiralBundle.message("run.anything.help.group.title")
 
     override fun getHelpIcon() = SpiralIcons.SPIRAL
 
@@ -32,6 +32,10 @@ class SpiralRunAnythingProvider : RunAnythingAnActionProvider<SpiralRunCommandAc
         if (DumbService.isDumb(project)) return emptyList()
 
         return ReadAction.compute<Collection<SpiralRunCommandAction>, Throwable> {
+            // Re-check inside the read action — indexing could have started between the
+            // outer check and acquiring the read lock.
+            if (DumbService.isDumb(project)) return@compute emptyList()
+
             FileBasedIndex.getInstance()
                 .getAllKeys(ConsoleCommandsIndex.key, project)
                 .map { SpiralRunCommandAction(it) }
