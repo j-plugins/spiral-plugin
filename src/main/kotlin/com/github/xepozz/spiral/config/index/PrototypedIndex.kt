@@ -22,6 +22,17 @@ import com.jetbrains.php.lang.psi.elements.impl.ClassConstImpl
 
 private typealias PrototypedIndexType = String
 
+/**
+ * Indexes Spiral prototype shortcuts:
+ * - `#[Prototyped(property: "name")]` attributes on PHP classes (property → owner FQN).
+ * - The `DEFAULT_SHORTCUTS` constant declared on [SpiralFrameworkClasses.PROTOTYPE_BOOTLOADER]
+ *   (shortcut name → target FQN).
+ *
+ * Dumb-mode contract: callers must wrap [getAll] / [getPrototypes] / [getPrototypeClass]
+ * (or any direct index access) in
+ * `DumbService.getInstance(project).runReadActionInSmartMode { ... }` to avoid
+ * `IndexNotReadyException` during indexing.
+ */
 class PrototypedIndex : AbstractIndex<PrototypedIndexType>() {
     companion object {
         val key = ID.create<String, PrototypedIndexType>("Spiral.Prototyped")
@@ -33,10 +44,9 @@ class PrototypedIndex : AbstractIndex<PrototypedIndexType>() {
 
             val fileBasedIndex = FileBasedIndex.getInstance()
 
-            return prototypes
-                .map { it to (fileBasedIndex.getValues(key, it, scope).firstOrNull() ?: "") }
-                .associate { it }
-//            fileBasedIndex.getValues(key, prototypes, GlobalSearchScope.allScope(project))
+            return prototypes.associateWith { prototype ->
+                fileBasedIndex.getValues(key, prototype, scope).firstOrNull() ?: ""
+            }
         }
 
         fun getPrototypes(project: Project): Collection<String> {
@@ -54,6 +64,8 @@ class PrototypedIndex : AbstractIndex<PrototypedIndexType>() {
         }
     }
 
+    // v2: value shape switched to prototype-name → owner-FQN map (covers both
+    // #[Prototyped] attributes and PrototypeBootloader::DEFAULT_SHORTCUTS).
     override fun getVersion() = 2
 
     override fun getName() = key
@@ -78,32 +90,30 @@ class PrototypedIndex : AbstractIndex<PrototypedIndexType>() {
                     val result = mutableMapOf<String, PrototypedIndexType>()
 
                     for (elem in hashElements) {
-                        val key = elem.key as? StringLiteralExpression ?: continue
-                        val value = elem.value as? ClassConstantReference ?: continue
-                        val classReference = value.classReference as? ClassReference ?: continue
+                        val shortcutKey = elem.key as? StringLiteralExpression ?: continue
+                        val shortcutValue = elem.value as? ClassConstantReference ?: continue
+                        val classReference = shortcutValue.classReference as? ClassReference ?: continue
 
-                        result[key.contents] = classReference.fqn.toString()
+                        result[shortcutKey.contents] = classReference.fqn.toString()
                     }
 
-//                    println("predefinedShortcuts: $result")
                     return@DataIndexer result
                 }
             }
         }
 
-        psiFile
-            .let { PsiTreeUtil.findChildrenOfType(it, PhpAttribute::class.java) }
-            .filter { it.fqn == SpiralFrameworkClasses.PROTOTYPED }
+        PsiTreeUtil.findChildrenOfType(psiFile, PhpAttribute::class.java)
+            .filter { attribute -> attribute.fqn == SpiralFrameworkClasses.PROTOTYPED }
             .mapNotNull { attribute ->
-                attribute.arguments
-                    .firstOrNull { it.name == "property" || it.name.isEmpty() }
+                val propertyArg = attribute.arguments
+                    .firstOrNull { arg -> arg.name == "property" || arg.name.isEmpty() }
                     ?.argument
-                    ?.value to attribute.owner as? PhpClass
+                    ?.value
+                val ownerClass = attribute.owner as? PhpClass
+                if (propertyArg.isNullOrEmpty() || ownerClass == null) null
+                else StringUtil.unquoteString(propertyArg) to ownerClass.fqn
             }
-            .filter { it.second != null && !it.first.isNullOrEmpty() }
-            .map { StringUtil.unquoteString(it.first!!) to it.second!!.fqn }
-            .associate { it }
-//            .associate { it.first to it.second }
+            .toMap()
     }
 
 }

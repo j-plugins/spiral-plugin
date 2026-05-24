@@ -7,7 +7,8 @@ import com.jetbrains.php.run.PhpRunConfigurationSettings
 class SpiralConsoleCommandRunConfigurationSettings : PhpRunConfigurationSettings, LocatableRunConfigurationOptions() {
     private val myCommandName = string("").provideDelegate(this, "commandName")
     private val myBinary = string("./app.php").provideDelegate(this, "binary")
-    private val myWorkingDirectory = string("").provideDelegate(this, "binary")
+    private val myDocumentRoot = string("").provideDelegate(this, "documentRoot")
+    private val myWorkingDirectory = string("").provideDelegate(this, "workingDirectory")
 
     var commandName: String?
         get() = myCommandName.getValue(this)
@@ -22,9 +23,9 @@ class SpiralConsoleCommandRunConfigurationSettings : PhpRunConfigurationSettings
         }
 
     var documentRoot: String?
-        get() = myBinary.getValue(this)
-        set(scriptName) {
-            myBinary.setValue(this, scriptName)
+        get() = myDocumentRoot.getValue(this)
+        set(value) {
+            myDocumentRoot.setValue(this, value)
         }
 
     var commandLineSettings = PhpCommandLineSettings()

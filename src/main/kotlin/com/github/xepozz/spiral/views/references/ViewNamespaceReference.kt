@@ -1,5 +1,6 @@
 package com.github.xepozz.spiral.views.references
 
+import com.github.xepozz.spiral.SpiralBundle
 import com.github.xepozz.spiral.SpiralIcons
 import com.github.xepozz.spiral.common.references.InsertTextInsertHandler
 import com.github.xepozz.spiral.php.contentRange
@@ -26,8 +27,6 @@ class ViewNamespaceReference(
 
         val namespacePath = ViewsNamespaceIndexUtil.getNamespace(namespaceName, project) ?: return null
 
-//        println("namespacePath: $namespacePath")
-
         val path = Path(namespacePath)
 
         val vf = VirtualFileManager.getInstance().findFileByNioPath(path) ?: return null
@@ -39,7 +38,6 @@ class ViewNamespaceReference(
         val project = element.project
         val projectDir = project.guessProjectDir() ?: return emptyArray()
 
-//        println("lookup for namespace: $rangeInElement")
         return ViewsNamespaceIndexUtil
             .getAllNamespaces(project)
             .map {
@@ -47,7 +45,7 @@ class ViewNamespaceReference(
                     .withIcon(SpiralIcons.SPIRAL)
                     .withTailText(" " + it.value.removePrefix(projectDir.path).removePrefix("/"))
                     .withInsertHandler(InsertTextInsertHandler(":", DoNotShow))
-                    .withTypeText("Namespace")
+                    .withTypeText(SpiralBundle.message("spiral.views.namespace.typeText"))
             }
             .toTypedArray()
     }
@@ -64,5 +62,3 @@ class ViewNamespaceReference(
         }
     }
 }
-
-

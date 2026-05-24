@@ -1,9 +1,11 @@
 package com.github.xepozz.spiral.router.references
 
+import com.github.xepozz.spiral.SpiralBundle
 import com.github.xepozz.spiral.SpiralIcons
 import com.github.xepozz.spiral.php.contentRange
 import com.github.xepozz.spiral.router.index.RouterIndexUtil
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
@@ -18,14 +20,22 @@ class RouterUriReference(
     override fun isSoft() = true
 
     override fun getVariants(): Array<out Any?> {
+        val project = element.project
+        if (DumbService.isDumb(project)) return emptyArray()
+
+        val rootLabel = SpiralBundle.message("endpoints.group.root")
         return RouterIndexUtil
-            .getAllRoutes(element.project)
+            .getAllRoutes(project)
+            .asSequence()
+            .distinctBy { it.uri }
             .map { route ->
                 LookupElementBuilder.create(route.uri)
-                    .withTypeText(route.name)
-                    .withTailText(" [${route.group}]")
+                    .withLookupString(route.uri.lowercase())
+                    .withTypeText(route.name ?: "")
+                    .withTailText(" [${route.group ?: rootLabel}]")
                     .withIcon(SpiralIcons.SPIRAL)
             }
+            .toList()
             .toTypedArray()
     }
 }

@@ -26,17 +26,8 @@ class PHPLanguageInjector : MultiHostInjector {
     ) {
         when (element) {
             is XmlAttributeValue -> {
-//                val attribute = element.parent as? XmlAttribute ?: return
-//
-//                if (!attribute.name.startsWith(':')) return
-//
                 val injectableHost = element as? PsiLanguageInjectionHost ?: return
-//
                 injectPhpConstruction(injectableHost, registrar)
-//                registrar
-//                    .startInjecting(PhpLanguage.INSTANCE ?: return)
-//                    .addPlace("<?=", "?>", injectableHost, TextRange(0, injectableHost.textLength))
-//                    .doneInjecting()
             }
 
             is HtmlTag -> {
@@ -48,13 +39,25 @@ class PHPLanguageInjector : MultiHostInjector {
             }
 
             is XmlText -> {
-//                println("element: ${element.text}, ${element.javaClass.name} ${element is PsiLanguageInjectionHost}")
                 val injectableHost = element as? PsiLanguageInjectionHost ?: return
                 injectIntoText(injectableHost, registrar)
             }
         }
     }
 
+    /**
+     * Injects PHP into the body of a Spiral templating expression (`{{ ... }}` or `{!! ... !!}`)
+     * inside an XML/HTML text host.
+     *
+     * Two code paths are required because XML lexers can either:
+     *   - merge the entire `{{ expr }}` sequence into a single [XmlToken] (single-child path), or
+     *   - split it across three tokens — the opening brace, the body, and the closing brace
+     *     (multi-child path).
+     *
+     * Both paths produce a [TextRange] that points to the body between the open and close tags
+     * relative to [element]'s text. The leading `@`-directive form is handled by
+     * [injectPhpConstruction].
+     */
     private fun injectIntoText(
         element: PsiLanguageInjectionHost,
         registrar: MultiHostRegistrar
@@ -62,25 +65,26 @@ class PHPLanguageInjector : MultiHostInjector {
         val children = element.node.children().toList()
             .filter { it is XmlToken }
             .apply { if (isEmpty()) return }
-//        println("children: $children")
 
         val textRange: TextRange
 
         injectPhpConstruction(element, registrar)
 
         if (children.size < 3) {
+            // Single-token case: the whole `{{ ... }}` sits in one XmlToken.
             val text = children[0].text
-            var openTag = tagsMap.keys.find { text.startsWith(it) } ?: return
-            var closeTag = tagsMap[openTag]?.apply { if (text.endsWith(this)) return } ?: return
+            val openTag = tagsMap.keys.find { text.startsWith(it) } ?: return
+            val closeTag = tagsMap[openTag]?.apply { if (text.endsWith(this)) return } ?: return
 
-            textRange = TextRange(text.indexOf(openTag) + openTag.length, text.indexOf(closeTag))
+            val closeIndex = text.indexOf(closeTag)
+            if (closeIndex < 0) return
 
-            println("openTag1: ${openTag}, closeTag: ${closeTag}")
+            textRange = TextRange(text.indexOf(openTag) + openTag.length, closeIndex)
         } else {
-            var openTag = children.find { tagsMap.containsKey(it.text) }?.psi ?: return
-            var closeTag = children.find { it.text == tagsMap[openTag.text] }?.psi ?: return
+            // Multi-token case: open brace, body, and close brace are separate XmlTokens.
+            val openTag = children.find { tagsMap.containsKey(it.text) }?.psi ?: return
+            val closeTag = children.find { it.text == tagsMap[openTag.text] }?.psi ?: return
             textRange = TextRange(openTag.textRangeInParent.endOffset, closeTag.startOffsetInParent)
-            println("openTag2: ${openTag.text}, closeTag: ${closeTag.text}")
         }
 
         registrar.startInjecting(PhpLanguage.INSTANCE)
@@ -110,6 +114,5 @@ class PHPLanguageInjector : MultiHostInjector {
     override fun elementsToInjectIn() = listOf(
         XmlAttributeValue::class.java,
         XmlText::class.java,
-//        HtmlTag::class.java,
     )
 }

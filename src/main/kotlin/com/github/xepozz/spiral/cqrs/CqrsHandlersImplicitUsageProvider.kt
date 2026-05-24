@@ -27,5 +27,5 @@ class CqrsHandlersImplicitUsageProvider : ImplicitUsageProvider {
 
     override fun isImplicitWrite(element: PsiElement) = false
 
-    override fun isClassWithCustomizedInitialization(element: PsiElement) = true
+    override fun isClassWithCustomizedInitialization(element: PsiElement) = isImplicitUsage(element)
 }

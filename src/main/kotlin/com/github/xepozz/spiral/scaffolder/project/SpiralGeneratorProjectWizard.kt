@@ -1,5 +1,6 @@
 package com.github.xepozz.spiral.scaffolder.project
 
+import com.github.xepozz.spiral.SpiralBundle
 import com.github.xepozz.spiral.SpiralIcons
 import com.github.xepozz.spiral.scaffolder.project.override.WebTemplateProjectWizardStep
 import com.intellij.ide.util.projectWizard.WebTemplateNewProjectWizardBase
@@ -10,7 +11,7 @@ import com.intellij.ide.wizard.RootNewProjectWizardStep
 
 class SpiralGeneratorProjectWizard : WebTemplateNewProjectWizardBase() {
     override val id = "spiral-project"
-    override val name = "Spiral"
+    override val name: String = SpiralBundle.message("spiral.project.wizard.name")
     override val icon = SpiralIcons.SPIRAL
 
     val template = SpiralProjectGenerator()

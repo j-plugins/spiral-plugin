@@ -10,13 +10,18 @@ import com.jetbrains.php.lang.psi.elements.Field
  * For some reason [ImplicitUsageProvider] doesn't handle Fields, but hope it will one day
  */
 class FilterAttributesImplicitUsageProvider : ImplicitUsageProvider {
-    override fun isImplicitUsage(element: PsiElement) = when (element) {
+    override fun isImplicitUsage(element: PsiElement) = isAttributesFilterField(element)
+
+    /**
+     * Fields of an [SpiralFrameworkClasses.ATTRIBUTES_FILTER] subclass are read by the
+     * framework when the validated DTO is consumed, so suppress "Unused field" warnings.
+     */
+    override fun isImplicitRead(element: PsiElement) = isAttributesFilterField(element)
+
+    override fun isImplicitWrite(element: PsiElement) = isAttributesFilterField(element)
+
+    private fun isAttributesFilterField(element: PsiElement): Boolean = when (element) {
         is Field -> element.containingClass?.hasSuperClass(SpiralFrameworkClasses.ATTRIBUTES_FILTER) == true
         else -> false
     }
-//        .apply { println("element: $element: ${element.text}, isImplicitUsage: $this") }
-
-    override fun isImplicitRead(element: PsiElement) = false
-
-    override fun isImplicitWrite(element: PsiElement) = true
 }
