@@ -48,13 +48,17 @@ abstract class AbstractRouterIndex : AbstractIndex<RouterIndexType>() {
         .mapNotNull { attribute ->
             val classMethod = attribute.owner as? Method
             if (classMethod == null) {
-                LOG.debug { "@Route attribute on non-method owner in ${inputData.file.path}; skipping" }
+                if (LOG.isDebugEnabled) {
+                    LOG.debug("@Route attribute on non-method owner in ${inputData.file.path}; skipping")
+                }
                 return@mapNotNull null
             }
 
             val uri = RouterIndexUtil.parseContent(attribute.getPsiArgument("uri", 0))
             if (uri.isEmpty()) {
-                LOG.debug { "@Route with empty uri at ${classMethod.fqn}; skipping" }
+                if (LOG.isDebugEnabled) {
+                    LOG.debug("@Route with empty uri at ${classMethod.fqn}; skipping")
+                }
                 return@mapNotNull null
             }
             val name = RouterIndexUtil.parseContent(attribute.getPsiArgument("name", 1))

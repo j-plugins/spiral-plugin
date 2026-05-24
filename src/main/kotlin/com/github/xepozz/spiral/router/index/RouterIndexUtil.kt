@@ -63,7 +63,9 @@ object RouterIndexUtil {
 
         val parts = fqn.split('.')
         if (parts.size != 2) {
-            LOG.debug { "Malformed controller FQN: '$fqn' (expected 'class.method')" }
+            if (LOG.isDebugEnabled) {
+                LOG.debug("Malformed controller FQN: '$fqn' (expected 'class.method')")
+            }
             return emptyList()
         }
         val (className, methodName) = parts

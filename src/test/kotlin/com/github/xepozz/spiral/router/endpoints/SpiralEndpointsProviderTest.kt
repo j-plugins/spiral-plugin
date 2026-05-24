@@ -24,7 +24,7 @@ class SpiralEndpointsProviderTest : BasePlatformTestCase() {
 
     private fun moduleFilter(): ModuleEndpointsFilter {
         val module = ModuleManager.getInstance(project).modules.first()
-        return ModuleEndpointsFilter(module, false)
+        return ModuleEndpointsFilter(module, false, true)
     }
 
     fun testGroupsAndEndpointsAreSurfaced() {
